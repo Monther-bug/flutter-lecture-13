@@ -1,0 +1,863 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lecture 15 · State Management 1: Introduction</title>
+  <meta name="description" content="Mobile App Development with Flutter, Lecture 15: Learn what state is, when setState is enough, why sharing data between screens gets painful, and how ValueNotifier keeps a mini shop's cart in sync on every screen.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Sora:wght@600;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="flutter-logo" viewBox="0 0 166 210">
+    <path fill="#44D1FD" d="M10 101 100 11h56L38 129z"/>
+    <path fill="#1FBCFD" d="M51 150 100 102h56l-77 76z"/>
+    <path fill="#08589C" d="M79 178 107 150l49 49h-56z"/>
+  </symbol>
+  <symbol id="i-git" viewBox="0 0 24 24"><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M6 3v12"/><path d="M18 9a9 9 0 0 1-9 9"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2.5"/><path d="M11 18h2"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><path d="M12 15V3"/></symbol>
+  <symbol id="i-windows" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></symbol>
+  <symbol id="i-laptop" viewBox="0 0 24 24"><path d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9"/><path d="M2 19.5 4 16h16l2 3.5a1 1 0 0 1-.9 1.5H2.9a1 1 0 0 1-.9-1.5z"/></symbol>
+  <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"/><path d="M5 3v4M3 5h4M19 17v4M17 19h4"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></symbol>
+  <symbol id="i-check-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m8 12 3 3 5-6"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="i-cpu" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/></symbol>
+  <symbol id="i-disk" viewBox="0 0 24 24"><path d="M22 12H2"/><path d="M5.5 5.1 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.8 4H7.2a2 2 0 0 0-1.7 1.1z"/><path d="M6 16h.01M10 16h.01"/></symbol>
+  <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M5 12.6a11 11 0 0 1 14 0"/><path d="M1.4 9a16 16 0 0 1 21.2 0"/><path d="M8.5 16.1a6 6 0 0 1 7 0"/><path d="M12 20h.01"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="m21.7 18-8-14a2 2 0 0 0-3.5 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3z"/><path d="M12 9v4M12 17h.01"/></symbol>
+  <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6M10 22h4"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.7-.9l-.8-1.2A2 2 0 0 0 7.9 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2z"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><polygon points="12 2 15.1 8.3 22 9.3 17 14.1 18.2 21 12 17.8 5.8 21 7 14.1 2 9.3 8.9 8.3 12 2"/></symbol>
+  <symbol id="i-package" viewBox="0 0 24 24"><path d="m7.5 4.3 9 5.1"/><path d="M21 8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.7z"/><path d="m3.3 7 8.7 5 8.7-5M12 22V12"/></symbol>
+  <symbol id="i-zap" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-terminal" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"/><path d="M12 19h8"/></symbol>
+  <symbol id="i-activity" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></symbol>
+  <symbol id="i-mouse" viewBox="0 0 24 24"><path d="m4 4 7 17 2.5-7.5L21 11z"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+  <symbol id="i-chrome" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="M21.2 8H12M3.9 6.1 8.5 14M10.9 21.9l4.6-7.9"/></symbol>
+  <symbol id="i-cable" viewBox="0 0 24 24"><path d="M17 21v-2a1 1 0 0 1-1-1v-1a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1a1 1 0 0 1-1 1v2"/><path d="M19 15V6.5a3.5 3.5 0 0 0-7 0v11a3.5 3.5 0 0 1-7 0V9"/><path d="M3 9V5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4z"/></symbol>
+  <symbol id="i-apple" viewBox="0 0 24 24"><path d="M12 7c-1.5-1.3-4.5-1.6-6 .5-1.6 2.3-1 6.6 1.3 9.9 1 1.4 2 2.6 3.2 2.5.9 0 1.2-.6 1.5-.6s.6.6 1.5.6c1.2.1 2.2-1.1 3.2-2.5 2.3-3.3 2.9-7.6 1.3-9.9-1.5-2.1-4.5-1.8-6-.5z"/><path d="M12 7c0-2 1-3.5 3-4"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></symbol>
+  <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 2 10 5-10 5L2 7z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></symbol>
+  <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 22a10 10 0 1 1 10-10c0 2.8-2.2 4-4 4h-2a2 2 0 0 0-1.5 3.3c.5.6.3 1.7-.5 2.2-.6.3-1.3.5-2 .5z"/><circle cx="7.5" cy="10.5" r="1"/><circle cx="12" cy="7.5" r="1"/><circle cx="16.5" cy="10.5" r="1"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a2 2 0 0 1-2 2h-4v-7H9v7H5a2 2 0 0 1-2-2z"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7z"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></symbol>
+  <symbol id="i-map-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></symbol>
+  <symbol id="i-cart" viewBox="0 0 24 24"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></symbol>
+  <symbol id="i-cart-plus" viewBox="0 0 24 24"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/><path d="M14 8.5v4.5M11.75 10.75h4.5"/></symbol>
+  <symbol id="i-bag" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></symbol>
+  <symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></symbol>
+  <symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></symbol>
+  <symbol id="i-database" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></symbol>
+  <symbol id="i-bell-off" viewBox="0 0 24 24"><path d="M8.7 3A6 6 0 0 1 18 8a21.3 21.3 0 0 0 .6 5"/><path d="M17 17H3s3-2 3-9a4.67 4.67 0 0 1 .3-1.7"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/><path d="m2 2 20 20"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></symbol>
+  <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/><path d="m15 5 4 4"/></symbol>
+  <symbol id="i-check-square" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-type" viewBox="0 0 24 24"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></symbol>
+  <symbol id="i-panel" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 3v6"/></symbol>
+  <symbol id="i-flask" viewBox="0 0 24 24"><path d="M10 2v7.5a2 2 0 0 1-.2.9L4.7 20.5a1 1 0 0 0 .9 1.5h12.8a1 1 0 0 0 .9-1.5l-5.1-10.1a2 2 0 0 1-.2-.9V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/></symbol>
+  <symbol id="i-shuffle" viewBox="0 0 24 24"><path d="m18 14 4 4-4 4"/><path d="m18 2 4 4-4 4"/><path d="M2 18h2a4 4 0 0 0 3.3-1.7l5.4-7.6A4 4 0 0 1 16 7h6"/><path d="M2 6h2a4 4 0 0 1 3.3 1.7l.6.9"/><path d="M22 18h-6a4 4 0 0 1-3.3-1.7l-.6-.9"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></symbol>
+  <symbol id="i-bug" viewBox="0 0 24 24"><path d="m8 2 1.9 1.9M14.1 3.9 16 2"/><path d="M9 7.1v-1a3 3 0 1 1 6 0v1"/><path d="M12 20c-3.3 0-6-2.7-6-6v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3c0 3.3-2.7 6-6 6"/><path d="M12 20v-9"/><path d="M6.5 9C4.6 8.8 3 7.1 3 5M6 13H2M3 21c0-2.1 1.7-3.9 3.8-4M21 5c0 2.1-1.6 3.8-3.5 4M22 13h-4M17.2 17c2.1.1 3.8 1.9 3.8 4"/></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></symbol>
+</svg>
+
+<div class="progress" aria-hidden="true"><span></span></div>
+
+<main class="deck">
+
+<!-- 01 · Title -->
+<section class="slide">
+  <div class="canvas"><div class="frame frame--title">
+    <div class="stagger">
+      <p class="kicker">Lecture 15 · Mobile App Development</p>
+      <h1 class="hero">State Management 1:<br><span class="grad-text">Introduction</span></h1>
+      <p class="lead lead--hero">Where should my app's data live? We feel the problem in a mini shop, then fix it with the one idea behind every state management package.</p>
+      <div class="chips">
+        <span class="chip"><span class="avatar">MI</span>Eng. Monther Ibrahim</span>
+        <span class="chip"><span class="avatar">M</span>Muhammad, M.Sc.</span>
+        <span class="chip">Fall 2026</span>
+      </div>
+      <p class="keys"><kbd>→</kbd> next &nbsp;·&nbsp; <kbd>F</kbd> fullscreen &nbsp;·&nbsp; <kbd>N</kbd> notes &nbsp;·&nbsp; <kbd>T</kbd> theme</p>
+    </div>
+    <div class="title-right" aria-hidden="true" style="display:grid; place-items:center;">
+      <div class="logo-glow" style="left:12%; top:10%;"></div>
+      <div class="ph" style="--pw:15.5cqw;">
+        <div class="ph__scr is-teal"><div class="ph__island"></div>
+          <div class="appbar"><span class="grow">Mini Shop</span><span class="cartb"><svg class="ico"><use href="#i-cart"/></svg><b>3</b></span></div>
+          <div class="m-tile"><svg class="ico"><use href="#i-bag"/></svg><span>Dates</span><svg class="ico"><use href="#i-cart-plus"/></svg></div>
+          <div class="m-tile"><svg class="ico"><use href="#i-bag"/></svg><span>Olive oil</span><svg class="ico"><use href="#i-cart-plus"/></svg></div>
+          <div class="m-tile"><svg class="ico"><use href="#i-bag"/></svg><span>Couscous</span><svg class="ico"><use href="#i-cart-plus"/></svg></div>
+          <div class="m-tile"><svg class="ico"><use href="#i-bag"/></svg><span>Green tea</span><svg class="ico"><use href="#i-cart-plus"/></svg></div>
+          <div class="m-tile"><svg class="ico"><use href="#i-bag"/></svg><span>Harissa</span><svg class="ico"><use href="#i-cart-plus"/></svg></div>
+        </div>
+      </div>
+      <div class="cart-float"><span class="cartb"><svg class="ico"><use href="#i-cart"/></svg><b>3</b></span></div>
+    </div>
+  </div></div>
+  <aside class="notes"><p>Today there is no new package. First we feel the problem with code we already know, then we see the idea that every state management solution uses.</p></aside>
+</section>
+
+<!-- 02 · Learning objectives -->
+<section class="slide">
+  <div class="canvas"><div class="frame">
+    <header class="head">
+      <p class="kicker">Today</p>
+      <h2 class="title">Learning objectives</h2>
+      <p class="lead">By the end of today you will have fixed a real bug that many beginners meet in their <b>first shop app</b>.</p>
+    </header>
+    <div class="body" style="grid-template-rows: 1fr auto;">
+      <div class="journey stagger">
+        <div class="stop"><div class="stop__dot"><svg class="ico"><use href="#i-help"/></svg><span class="stop__n">1</span></div><h3>What is state?</h3><p>explain it, with examples</p></div>
+        <div class="stop"><div class="stop__dot"><svg class="ico"><use href="#i-users"/></svg><span class="stop__n">2</span></div><h3>Local vs shared</h3><p>tell local state from shared state</p></div>
+        <div class="stop"><div class="stop__dot"><svg class="ico"><use href="#i-arrow-up"/></svg><span class="stop__n">3</span></div><h3>Lift state up</h3><p>data down, callbacks up</p></div>
+        <div class="stop"><div class="stop__dot"><svg class="ico"><use href="#i-bell"/></svg><span class="stop__n">4</span></div><h3>ValueNotifier</h3><p>share data between screens</p></div>
+        <div class="stop"><div class="stop__dot"><svg class="ico"><use href="#i-package"/></svg><span class="stop__n">5</span></div><h3>Packages</h3><p>the main ones, and when to use them</p></div>
+      </div>
+      <div class="callout callout--ok goal"><svg class="ico"><use href="#i-target"/></svg><div><b>Goal:</b> a Mini Shop where the cart badge on <b>every</b> screen always shows the same number.</div></div>
+    </div>
+    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+  </div></div>
+  <aside class="notes"><p>Read the five goals aloud. Tell students that by the end of today they will have fixed a real bug that many beginners meet in their first shop app.</p></aside>
+</section>
+
+<!-- 03 · What is state? -->
+<section class="slide">
+  <div class="canvas"><div class="frame">
+    <header class="head">
+      <p class="kicker">The basics</p>
+      <h2 class="title">What is state?</h2>
+    </header>
+    <div class="body" style="grid-template-rows: auto auto auto; align-content:center; gap:2cqw;">
+      <div class="card card--hl" style="font-size:2.05cqw; line-height:1.4; padding:1.7cqw 2.2cqw;"><b>State</b> = any data that can <b>change</b> while the app runs <b>and</b> changes what the user <b>sees</b></div>
+      <div class="stagger" style="display:grid; grid-template-columns: repeat(4, 1fr); gap:1.4cqw;">
+        <article class="card ex">
+          <div class="ex__top"><span class="itile"><svg class="ico"><use href="#i-cart"/></svg></span><h3>Cart count</h3></div>
+          <div class="ex__demo"><span class="cartb" style="font-size:3.8cqw;"><svg class="ico"><use href="#i-cart"/></svg><b>3</b></span></div>
+          <p>0 → 3, the badge shows “3”</p>
+        </article>
+        <article class="card ex">
+          <div class="ex__top"><span class="itile"><svg class="ico"><use href="#i-user"/></svg></span><h3>Logged-in user</h3></div>
+          <div class="ex__demo"><span class="chip" style="font-size:1.25cqw;"><span class="avatar">A</span>Hello, Ali</span><span class="muted small">or</span><span class="mbtn mbtn--elev" style="height:2.8cqw; font-size:1.2cqw;">Login</span></div>
+          <p>“Hello, Ali” or a Login button</p>
+        </article>
+        <article class="card ex">
+          <div class="ex__top"><span class="itile"><svg class="ico"><use href="#i-moon"/></svg></span><h3>Dark mode</h3></div>
+          <div class="ex__demo"><span class="swatch" style="background:#FFFFFF; color:#1D1B20;"><svg class="ico"><use href="#i-sun"/></svg></span><span class="swatch" style="background:#141218; color:#E6E0E9;"><svg class="ico"><use href="#i-moon"/></svg></span></div>
+          <p>on or off (Lecture 10)</p>
+        </article>
+        <article class="card ex">
+          <div class="ex__top"><span class="itile"><svg class="ico"><use href="#i-globe"/></svg></span><h3>Language</h3></div>
+          <div class="ex__demo"><span class="chip" dir="rtl" lang="ar" style="font-size:1.45cqw;">العربية</span><span class="muted small">or</span><span class="chip" style="font-size:1.45cqw;">English</span></div>
+          <p><span lang="ar">العربية</span> or English (Lecture 11)</p>
+        </article>
+      </div>
+      <div class="callout callout--info" style="font-size:1.35cqw;"><svg class="ico"><use href="#i-info"/></svg><div><b>Not state:</b> the app's logo or a fixed title. They never change, so they are not state.</div></div>
+    </div>
+    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+  </div></div>
+  <aside class="notes"><p>Ask students for state in apps they use every day: the unread count in WhatsApp, the red heart on a liked post. Then give a “not state” example: the app's logo or a fixed title never changes, so it is not state.</p></aside>
+</section>
+
+<!-- 04 · UI = f(state) -->
+<section class="slide">
+  <div class="canvas"><div class="frame">
+    <header class="head">
+      <p class="kicker">The big idea</p>
+      <h2 class="title">UI = f(state)</h2>
+    </header>
+    <div class="body" style="grid-template-rows: auto auto; align-content:center; gap:2.8cqw;">
+      <div class="ufs">
+        <div class="card"><span class="badge">State</span><code class="ufs__big">count = 3</code><small>the data</small></div>
+        <div class="arrow-mid"><svg class="ico"><use href="#i-arrow-right"/></svg></div>
+        <div class="card"><span class="badge badge--warm">Recipe</span><code class="ufs__big">build()</code><small>Flutter runs it for you</small></div>
+        <div class="arrow-mid"><svg class="ico"><use href="#i-arrow-right"/></svg></div>
+        <div class="card"><span class="badge badge--ok">UI</span><span class="cartb" style="font-size:3.4cqw;"><svg class="ico"><use href="#i-cart"/></svg><b>3</b></span><small>the badge shows 3</small></div>
+        <div class="ufs__loop"><span><svg class="ico"><use href="#i-refresh"/></svg>state changes → <code>build()</code> runs again → new UI</span></div>
+      </div>
+      <div class="stagger" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:1.4cqw;">
+        <div class="callout" style="font-size:1.45cqw;"><svg class="ico"><use href="#i-x"/></svg><div>In Flutter we do <b>not</b> change the screen directly</div></div>
+        <div class="callout callout--info" style="font-size:1.45cqw;"><svg class="ico"><use href="#i-refresh"/></svg><div>We change the <b>data</b>, and Flutter calls <code>build()</code> again</div></div>
+        <div class="callout callout--ok" style="font-size:1.45cqw;"><svg class="ico"><use href="#i-check-circle"/></svg><div><code>build()</code> is like a recipe: same data in, same screen out</div></div>
+      </div>
+    </div>
+    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+  </div></div>
+  <aside class="notes"><p>Remind students of Lecture 09: <code>setState</code> is how we tell Flutter “the data changed, please run <code>build()</code> again”. “f” means function: the screen is a function of the state.</p></aside>
+</section>
+
+<!-- 05 · What is state management? -->
+<section class="slide">
+  <div class="canvas"><div class="frame">
+    <header class="head">
+      <p class="kicker">Why we need a plan</p>
+      <h2 class="title">What is state management, and why do we need it?</h2>
+    </header>
+    <div class="body" style="grid-template-columns: 1fr 1fr; gap:2.4cqw; align-items:center;">
+      <div class="side">
+        <div class="say" style="font-size:1.75cqw; line-height:1.45;"><b>State management</b> = a plan for your data. It answers four questions:</div>
+        <div class="stagger" style="display:grid; grid-template-columns: 1fr 1fr; gap:1.1cqw;">
+          <div class="card" style="display:flex; align-items:center; gap:1.1cqw; padding:1.8cqw 1.4cqw; font-size:1.5cqw; line-height:1.35; min-height:8.6cqw;"><span class="itile" style="width:3.4cqw; height:3.4cqw; font-size:1.75cqw;"><svg class="ico"><use href="#i-database"/></svg></span><b>Where does it live?</b></div>
+          <div class="card" style="display:flex; align-items:center; gap:1.1cqw; padding:1.8cqw 1.4cqw; font-size:1.5cqw; line-height:1.35; min-height:8.6cqw;"><span class="itile" style="width:3.4cqw; height:3.4cqw; font-size:1.75cqw;"><svg class="ico"><use href="#i-eye"/></svg></span><b>Who can read it?</b></div>
+          <div class="card" style="display:flex; align-items:center; gap:1.1cqw; padding:1.8cqw 1.4cqw; font-size:1.5cqw; line-height:1.35; min-height:8.6cqw;"><span class="itile" style="width:3.4cqw; height:3.4cqw; font-size:1.75cqw;"><svg class="ico"><use href="#i-pencil"/></svg></span><b>Who can change it?</b></div>
+          <div class="card" style="display:flex; align-items:center; gap:1.1cqw; padding:1.8cqw 1.4cqw; font-size:1.5cqw; line-height:1.35; min-height:8.6cqw;"><span class="itile" style="width:3.4cqw; height:3.4cqw; font-size:1.75cqw;"><svg class="ico"><use href="#i-bell"/></svg></span><b>How does the UI hear about changes?</b></div>
+        </div>
+      </div>
+      <div class="side">
+        <div class="stats stagger">
+          <div class="card stat stat--ok"><small>One screen, one number</small><b>Easy</b><span><code>setState</code> is enough</span></div>
+          <div class="card stat stat--bad"><small>A real app</small><b>10 screens</b><span>share the cart, the user and the theme</span></div>
+        </div>
+        <div class="card" style="display:grid; gap:1cqw; padding:1.3cqw 1.4cqw;">
+          <div style="display:flex; align-items:center; gap:.9cqw; font-size:1.3cqw; line-height:1.35;"><svg class="ico" style="font-size:1.6cqw; color:var(--warm);"><use href="#i-copy"/></svg><span>Without a plan: <b>copies</b> of the data get out of sync</span></div>
+          <div class="mini-bars">
+            <div class="mini-bar">Home<span class="cartb"><svg class="ico"><use href="#i-cart"/></svg><b>3</b></span></div>
+            <div class="mini-bar">Product<span class="cartb"><svg class="ico"><use href="#i-cart"/></svg><b>3</b></span></div>
+            <div class="mini-bar mini-bar--bad">Cart<span class="cartb"><svg class="ico"><use href="#i-cart"/></svg></span></div>
+          </div>
+        </div>
+        <div class="callout callout--warn" style="font-size:1.3cqw;"><svg class="ico"><use href="#i-bug"/></svg><div>Result: bugs like <b>“I added an item but the cart still says 0”</b></div></div>
+      </div>
+    </div>
+    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+  </div></div>
+  <aside class="notes"><p>Keep it concrete. A shop app has the cart count in the AppBar of the home screen, the product screen and the cart screen. All three must always show the same number.</p></aside>
+</section>
+
+<!-- 06 · Local vs shared -->
+<section class="slide">
+  <div class="canvas"><div class="frame">
+    <header class="head">
+      <p class="kicker">Two kinds of state</p>
+      <h2 class="title">Local state vs shared state</h2>
+    </header>
+    <div class="body" style="grid-template-rows: auto auto; align-content:start; gap:1.4cqw;">
+      <table class="tbl tbl--vs">
+        <thead><tr><th></th><th><svg class="ico"><use href="#i-user"/></svg>Local (ephemeral) state</th><th><svg class="ico"><use href="#i-users"/></svg>Shared (app) state</th></tr></thead>
+        <tbody>
+          <tr><td>Used by</td><td><b>one</b> widget (and its children)</td><td><b>many</b> widgets on many screens</td></tr>
+          <tr><td>Lives</td><td>while that widget is on screen</td><td>while the app is running</td></tr>
+          <tr><td>Examples</td>
+            <td><div class="example-list">
+              <span class="chip"><svg class="ico"><use href="#i-eye"/></svg>password eye icon on/off</span>
+              <span class="chip"><svg class="ico"><use href="#i-panel"/></svg>current tab</span>
+              <span class="chip"><svg class="ico"><use href="#i-check-square"/></svg>a ticked checkbox</span>
+              <span class="chip"><svg class="ico"><use href="#i-type"/></svg>text being typed</span>
+            </div></td>
+            <td><div class="example-list">
+              <span class="chip"><svg class="ico"><use href="#i-cart"/></svg>cart items</span>
+              <span class="chip"><svg class="ico"><use href="#i-user"/></svg>logged-in user</span>
+              <span class="chip"><svg class="ico"><use href="#i-moon"/></svg>dark mode</span>
+              <span class="chip"><svg class="ico"><use href="#i-globe"/></svg>language</span>
+              <span class="chip"><svg class="ico"><use href="#i-heart"/></svg>favorites</span>
+            </div></td></tr>
+          <tr><td>Tool</td><td><code>setState</code></td><td>one shared place (today <code>ValueNotifier</code>, next lecture Provider)</td></tr>
+        </tbody>
+      </table>
+      <div class="callout callout--info"><svg class="ico"><use href="#i-help"/></svg><div><b>Quick quiz:</b> the selected page in a PageView? The app language? No perfect rule: if only <b>one</b> widget needs it, keep it local.</div></div>
+    </div>
+    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+  </div></div>
+  <aside class="notes"><p>“Ephemeral” means short-lived; it is the word the Flutter docs use (docs.flutter.dev/data-and-backend/state-mgmt/ephemeral-vs-app). Quick quiz: “The selected page in a PageView?” (usually local) “The app language?” (shared). There is no perfect rule: if only one widget needs it, keep it local.</p></aside>
+</section>
+
+<!-- 07 · setState recap -->
+<section class="slide">
+  <div class="canvas"><div class="frame">
+    <header class="head">
+      <p class="kicker">Recap · Lecture 09</p>
+      <h2 class="title"><code>setState</code> recap: where it shines</h2>
+    </header>
+    <div class="body" style="grid-template-columns: 1fr auto; gap: 2.4cqw; align-items:start;">
+      <div class="side">
+        <div class="term code">
+          <div class="term__bar"><i></i><i></i><i></i><span>lib/counter_page.dart</span><span class="grow"></span><span>_CounterPageState</span></div>
+<pre class="hl" data-hl="1,6,9-11">int count = 0; // in _CounterPageState: the state
+
+// in build():
+return Scaffold(
+  appBar: AppBar(title: const Text('Counter')),
+  body: Center(child: Text('$count', style: const TextStyle(fontSize: 64))),
+  floatingActionButton: FloatingActionButton(
+    onPressed: () {
+      setState(() {
+        count++; // change the data inside setState
+      });
+    },
+    child: const Icon(Icons.add),
+  ),
+);</pre>
+        </div>
+        <div class="stagger" style="display:grid; grid-template-columns: 1fr 1fr 1.25fr; gap:1.2cqw;">
+          <div class="callout callout--ok" style="font-size:1.25cqw;"><svg class="ico"><use href="#i-package"/></svg><div>Built into Flutter, <b>no package</b>, very little code</div></div>
+          <div class="callout callout--ok" style="font-size:1.25cqw;"><svg class="ico"><use href="#i-user"/></svg><div>Perfect when <b>only this widget</b> uses the data</div></div>
+          <div class="callout callout--info" style="font-size:1.25cqw;"><svg class="ico"><use href="#i-heart"/></svg><div>Examples: the like button from Lecture 09, a show/hide password icon, a checkbox, a tab index</div></div>
+        </div>
+      </div>
+      <div class="ph" style="--pw:14cqw;">
+        <div class="ph__scr"><div class="ph__island"></div>
+          <div class="appbar">Counter</div>
+          <div class="pbody"><div style="font-size:4.4em; line-height:1;">3</div></div>
+          <div class="m-fab"><svg class="ico"><use href="#i-plus"/></svg></div>
+        </div>
+      </div>
+    </div>
+    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+  </div></div>
+  <aside class="notes"><p>This is the counter from Lecture 09, unchanged. <code>setState</code> is not “bad”; it is the right tool for local state, and we keep using it for the rest of the course.</p></aside>
+</section>
+
+<!-- 08 · The Mini Shop -->
+<section class="slide">
+  <div class="canvas"><div class="frame">
+    <header class="head">
+      <p class="kicker">Our demo app</p>
+      <h2 class="title">The Mini Shop: our problem</h2>
+    </header>
+    <div class="body" style="grid-template-columns: auto auto auto 1fr; gap: 1.6cqw; align-items:center;">
+      <div class="ph-col">
+        <div class="ph" style="--pw:14.4cqw;">
+          <div class="ph__scr is-teal"><div class="ph__island"></div>
+            <div class="appbar"><span class="grow">Mini Shop</span><span class="cartb is-tag is-tag--left" data-tag="count"><svg class="ico"><use href="#i-cart"/></svg><b>3</b></span></div>
+            <div class="m-tile"><svg class="ico"><use href="#i-bag"/></svg><span>Dates</span><svg class="ico"><use href="#i-cart-plus"/></svg></div>
+            <div class="m-tile"><svg class="ico"><use href="#i-bag"/></svg><span>Olive oil</span><svg class="ico"><use href="#i-cart-plus"/></svg></div>
+            <div class="m-tile"><svg class="ico"><use href="#i-bag"/></svg><span>Couscous</span><svg class="ico"><use href="#i-cart-plus"/></svg></div>
+            <div class="m-tile"><svg class="ico"><use href="#i-bag"/></svg><span>Green tea</span><svg class="ico"><use href="#i-cart-plus"/></svg></div>
+            <div class="m-tile"><svg class="ico"><use href="#i-bag"/></svg><span>Harissa</span><svg class="ico"><use href="#i-cart-plus"/></svg></div>
+          </div>
+        </div>
+        <p class="ph-cap"><b>Mini Shop</b>: 5 products</p>
+      </div>
+      <div class="arrow-mid" style="gap:.4cqw;"><svg class="ico"><use href="#i-arrow-right"/></svg><small style="font:600 .9cqw/1 var(--font-mono); color:var(--muted);">push</small></div>
+      <div class="ph-col">
+        <div class="ph" style="--pw:14.4cqw;">
+          <div class="ph__scr is-teal"><div class="ph__island"></div>
+            <div class="appbar"><svg class="ico-m"><use href="#i-arrow-left"/></svg><span class="grow">My Cart</span><span class="cartb is-tag is-tag--left" data-tag="count"><svg class="ico"><use href="#i-cart"/></svg><b>3</b></span></div>
+            <div class="pbody"><div style="display:grid; justify-items:center; gap:1.1em;"><div class="m-big is-tag" data-tag="count">Items in cart: 3</div><div class="m-btn m-btn--elev">Clear cart</div></div></div>
+          </div>
+        </div>
+        <p class="ph-cap"><b>My Cart</b>: the cart page</p>
+      </div>
+      <div class="side">
+        <ul class="checklist stagger" style="margin-top:0;">
+          <li><span><b>Both</b> AppBars need the cart count</span></li>
+          <li><span>“Add” on a product must update the badge</span></li>
+          <li><span>“Clear cart” on the cart page must update <b>both</b> screens</span></li>
+        </ul>
+        <div class="callout callout--warn"><svg class="ico"><use href="#i-alert"/></svg><div><b>Lecture 14 cliffhanger:</b> the badge forgot its number when you left the products page.</div></div>
+        <div class="callout callout--info" style="font-size:1.4cqw;"><svg class="ico"><use href="#i-help"/></svg><div>Where should the variable <code>cartCount</code> live?</div></div>
+      </div>
+    </div>
+    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+  </div></div>
+  <aside class="notes"><p>Start from the Lecture 14 cliffhanger: the badge there forgot its number when you left the products page, because the number lived in that page's <code>State</code>, and a popped page's <code>State</code> is thrown away. Then ask the class: “Where should the variable <code>cartCount</code> live?” Collect answers before the next slide.</p></aside>
+</section>
+
+<!-- 09 · Lifting state up -->
+<section class="slide">
+  <div class="canvas"><div class="frame">
+    <header class="head">
+      <p class="kicker">Idea 1 · Use what we know</p>
+      <h2 class="title">Lifting state up</h2>
+    </header>
+    <div class="body" style="grid-template-columns: 1.12fr .88fr; gap: 2.4cqw; align-items:center;">
+      <div class="card" style="padding:2.2cqw 1.2cqw;">
+        <div class="wt wt--lg">
+          <ul><li><span class="nd nd--hl">ProductsPage<small>owns _cartCount (lifted up here)</small></span>
+            <ul>
+              <li><span class="slot">appBar:</span><span class="nd">AppBar</span>
+                <ul><li><span class="nd nd--data">CartBadge(count)<small>↓ data goes down</small></span></li></ul>
+              </li>
+              <li><span class="slot">body:</span><span class="nd nd--cb">ProductList(onAdd)<small>↓ callback goes down</small></span>
+                <ul><li><span class="nd nd--up">ProductTile(onAdd)<small>↑ event goes up: onAdd() → setState</small></span></li></ul>
+              </li>
+            </ul>
+          </li></ul>
+        </div>
+      </div>
+      <div class="side">
+        <ol class="steps bigsteps stagger">
+          <li><span>Find the <b>closest common parent</b> of every widget that needs the data</span></li>
+          <li><span>Move the data and <code>setState</code> into that parent</span></li>
+          <li><span>Pass <b>data down</b> as constructor parameters</span></li>
+          <li><span>Pass <b>callbacks down</b>; children call them to send events <b>up</b></span></li>
+        </ol>
+        <div class="callout callout--info"><svg class="ico"><use href="#i-bulb"/></svg><div>A <b>callback</b> is just a function we hand to a child, like <code>onPressed</code> in Lecture 07.</div></div>
+      </div>
+    </div>
+    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+  </div></div>
+  <aside class="notes"><p>A callback is just a function we hand to a child, like <code>onPressed</code> in Lecture 07. The child does not know what happens; it only calls the function.</p></aside>
+</section>
+
+<!-- 10 · Code: data down, callbacks up -->
+<section class="slide">
+  <div class="canvas"><div class="frame">
+    <header class="head">
+      <p class="kicker">Mini Shop v1 · setState</p>
+      <h2 class="title">Code: data down, callbacks up</h2>
+    </header>
+    <div class="body" style="grid-template-columns: auto 1fr auto; gap: 2cqw; align-items:start;">
+      <div class="term code code--sm">
+        <div class="term__bar"><i></i><i></i><i></i><span>lib/products_page.dart</span><span class="grow"></span><span>_ProductsPageState</span></div>
+<pre class="hl" data-groups="1,3-7:g1;12:g2;15:g3">int _cartCount = 0; // lifted up: the common parent owns the data
+
+void _addToCart() {
+  setState(() {
+    _cartCount++;
+  });
+}
+
+// inside build():
+IconButton(
+  onPressed: _openCart,
+  icon: CartBadge(count: _cartCount), // data down
+),
+// ...
+body: ProductList(onAdd: _addToCart), // callback down, event up</pre>
+      </div>
+      <div class="explain">
+        <div class="legend-groups stagger">
+          <div class="lg" style="--c:#13B9FD;"><span class="n">1</span><b>The parent owns the data</b><span><code>_cartCount</code> and <code>_addToCart</code> live in <code>ProductsPage</code></span></div>
+          <div class="lg" style="--c:#FFC857;"><span class="n">2</span><b>Data down</b><span>the badge gets <code>count</code> as a constructor parameter</span></div>
+          <div class="lg" style="--c:#4ADE80;"><span class="n">3</span><b>Callback down</b><span><code>ProductList</code> only passes <code>onAdd</code> on to each <code>ProductTile</code></span></div>
+        </div>
+        <div class="callout callout--ok"><svg class="ico"><use href="#i-arrow-up"/></svg><div><b>Event up:</b> <code>ProductTile</code> calls <code>onAdd</code> from its add-to-cart <code>IconButton</code></div></div>
+      </div>
+      <div class="ph" style="--pw:13.4cqw;">
+        <div class="ph__scr is-teal"><div class="ph__island"></div>
+          <div class="appbar"><span class="grow">Mini Shop</span><span class="cartb is-tag is-tag--left" data-tag="count"><svg class="ico"><use href="#i-cart"/></svg><b>3</b></span></div>
+          <div class="m-tile is-tag" data-tag="ProductTile" style="margin-top:.5em;"><svg class="ico"><use href="#i-bag"/></svg><span>Dates</span><svg class="ico"><use href="#i-cart-plus"/></svg></div>
+          <div class="m-tile"><svg class="ico"><use href="#i-bag"/></svg><span>Olive oil</span><svg class="ico"><use href="#i-cart-plus"/></svg></div>
+          <div class="m-tile"><svg class="ico"><use href="#i-bag"/></svg><span>Couscous</span><svg class="ico"><use href="#i-cart-plus"/></svg></div>
+          <div class="m-tile"><svg class="ico"><use href="#i-bag"/></svg><span>Green tea</span><svg class="ico"><use href="#i-cart-plus"/></svg></div>
+          <div class="m-tile"><svg class="ico"><use href="#i-bag"/></svg><span>Harissa</span><svg class="ico"><use href="#i-cart-plus"/></svg></div>
+        </div>
+      </div>
+    </div>
+    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+  </div></div>
+  <aside class="notes"><p>Live-code this in <code>products_page.dart</code> (complete example, version 1). Run it: tapping add on any product updates the badge. So far, so good.</p></aside>
+</section>
+
+<!-- 11 · The bug -->
+<section class="slide">
+  <div class="canvas"><div class="frame">
+    <header class="head">
+      <p class="kicker">Mini Shop v1 · The bug</p>
+      <h2 class="title">Opening the cart page... and a bug</h2>
+    </header>
+    <div class="body" style="grid-template-columns: 1fr auto; gap: 2.4cqw; align-items:start;">
+      <div class="side">
+        <div class="term code">
+          <div class="term__bar"><i></i><i></i><i></i><span>lib/products_page.dart</span><span class="grow"></span><span>_ProductsPageState</span></div>
+<pre class="hl" data-hl="5">void _openCart() {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) =&gt; CartPage(count: _cartCount, onClear: _clearCart),
+    ),
+  );
+}</pre>
+        </div>
+        <ol class="steps stagger">
+          <li><span><b>Try it:</b> add 3 items, open the cart, it says “Items in cart: 3”</span></li>
+          <li><span>Tap “Clear cart”: the cart page <b>still says 3</b></span></li>
+          <li><span>Go back: the products page badge is empty (0)</span></li>
+        </ol>
+        <div class="callout callout--warn"><svg class="ico"><use href="#i-bug"/></svg><div><b>Why?</b> <code>CartPage</code> got a <b>copy</b> of the number when it opened. A pushed page is not a child of <code>ProductsPage</code>, so <code>setState</code> there does not rebuild it.</div></div>
+      </div>
+      <div class="phones" style="gap:1.6cqw;">
+        <div class="ph-col">
+          <div class="ph" style="--pw:12.4cqw;">
+            <div class="ph__scr is-teal"><div class="ph__island"></div>
+              <div class="appbar"><svg class="ico-m"><use href="#i-arrow-left"/></svg><span class="grow">My Cart</span><span class="cartb"><svg class="ico"><use href="#i-cart"/></svg><b>3</b></span></div>
+              <div class="pbody"><div style="display:grid; justify-items:center; gap:1.1em;"><div class="m-big is-tag is-tag--bad" data-tag="still 3!">Items in cart: 3</div><div class="m-btn m-btn--elev">Clear cart</div></div></div>
+            </div>
+          </div>
+          <p class="ph-cap">After tapping <b>Clear cart</b></p>
+        </div>
+        <div class="ph-col">
+          <div class="ph" style="--pw:12.4cqw;">
+            <div class="ph__scr is-teal"><div class="ph__island"></div>
+              <div class="appbar"><span class="grow">Mini Shop</span><span class="cartb is-tag is-tag--left" data-tag="0"><svg class="ico"><use href="#i-cart"/></svg></span></div>
+              <div class="m-tile"><svg class="ico"><use href="#i-bag"/></svg><span>Dates</span><svg class="ico"><use href="#i-cart-plus"/></svg></div>
+              <div class="m-tile"><svg class="ico"><use href="#i-bag"/></svg><span>Olive oil</span><svg class="ico"><use href="#i-cart-plus"/></svg></div>
+              <div class="m-tile"><svg class="ico"><use href="#i-bag"/></svg><span>Couscous</span><svg class="ico"><use href="#i-cart-plus"/></svg></div>
+              <div class="m-tile"><svg class="ico"><use href="#i-bag"/></svg><span>Green tea</span><svg class="ico"><use href="#i-cart-plus"/></svg></div>
+              <div class="m-tile"><svg class="ico"><use href="#i-bag"/></svg><span>Harissa</span><svg class="ico"><use href="#i-cart-plus"/></svg></div>
+            </div>
+          </div>
+          <p class="ph-cap">After going <b>back</b></p>
+        </div>
+      </div>
+    </div>
+    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+  </div></div>
+  <aside class="notes"><p>Let students guess what will happen before you tap “Clear cart”. This is the moment they feel the problem. Workarounds exist (popping back with a result, copying the data into the cart page), but each one adds more code and more places for bugs.</p></aside>
+</section>
+
+<!-- 12 · The pains -->
+<section class="slide">
+  <div class="canvas"><div class="frame">
+    <header class="head">
+      <p class="kicker">Why it hurts</p>
+      <h2 class="title">The pains in bigger apps</h2>
+    </header>
+    <div class="body" style="grid-template-columns: 1.08fr .92fr; gap: 2.2cqw; align-items:start;">
+      <div class="legend-groups stagger">
+        <div class="lg" style="--c:#F87171;"><span class="n">1</span><b>Prop drilling</b><span><code>ProductList</code> takes <code>onAdd</code> only to pass it on. (“Prop” = a constructor parameter; “drilling” = passing it through many layers.) Imagine 5 layers</span></div>
+        <div class="lg" style="--c:#F87171;"><span class="n">2</span><b>Rebuilding too much</b><span>one tap rebuilds the whole page (console on the right)</span></div>
+        <div class="lg" style="--c:#F87171;"><span class="n">3</span><b>Logic mixed with UI</b><span>the cart rules live inside a page's <code>State</code></span></div>
+        <div class="lg" style="--c:#F87171;"><span class="n">4</span><b>Hard to test</b><span>to test “add to cart” you must build the whole page</span></div>
+        <div class="lg" style="--c:#F87171;"><span class="n">5</span><b>Other screens don't hear the change</b><span>the stale cart page from slide 11</span></div>
+      </div>
+      <div class="side">
+        <div class="card" style="padding:1.2cqw 1.4cqw 1.5cqw;">
+          <span class="badge badge--warm" style="margin-bottom:.4cqw;">1 · Prop drilling</span>
+          <div class="wt wt--lg">
+            <ul><li><span class="nd nd--hl">ProductsPage<small>owns _cartCount and _addToCart</small></span>
+              <ul><li><span class="nd nd--warn">ProductList(onAdd)<small>doesn't use onAdd, only passes it on</small></span>
+                <ul><li><span class="nd nd--up">ProductTile(onAdd)<small>finally uses it in its IconButton</small></span></li></ul>
+              </li></ul>
+            </li></ul>
+          </div>
+        </div>
+        <div class="term">
+          <div class="term__bar"><i></i><i></i><i></i><span>Debug Console</span><span class="grow"></span><span>2 · one tap on add</span></div>
+<pre>ProductsPage build
+ProductList build
+ProductTile build: Dates   <span class="t-c">... (all 5 tiles)</span>
+CartBadge build: 1</pre>
+        </div>
+      </div>
+    </div>
+    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+  </div></div>
+  <aside class="notes"><p>Each <code>build()</code> in the demo has a <code>debugPrint</code> line, so the Debug Console shows every rebuild. One tap on “add” prints 8 lines, just to change one small number in the badge.</p><p>Students already met prop drilling in Lecture 10: <code>onThemeChanged</code> travelled from <code>MyApp</code> through <code>LoginPage</code> and <code>HomePage</code> down to <code>ThemeButton</code>.</p></aside>
+</section>
+
+<!-- 13 · Why solutions exist -->
+<section class="slide">
+  <div class="canvas"><div class="frame">
+    <header class="head">
+      <p class="kicker">The big idea</p>
+      <h2 class="title">Why state management solutions exist</h2>
+    </header>
+    <div class="body" style="grid-template-rows: auto auto; align-content:center; gap: 2.8cqw;">
+      <div class="hub">
+        <div class="card hub__node" style="grid-column:1; grid-row:1; --c:var(--warm);"><svg class="ico"><use href="#i-cart-plus"/></svg><span><b>Add</b> button</span></div>
+        <div class="flow flow--change" style="grid-column:2; grid-row:1;"><span>change</span></div>
+        <div class="card hub__node" style="grid-column:1; grid-row:3; --c:var(--warm);"><svg class="ico"><use href="#i-x"/></svg><span><b>Clear cart</b> button</span></div>
+        <div class="flow flow--change" style="grid-column:2; grid-row:3;"><span>change</span></div>
+        <div class="card card--hl hub__core"><svg class="ico"><use href="#i-database"/></svg><h3>Cart data</h3><p><b>one place</b>,<br>outside all screens</p></div>
+        <div class="flow flow--listen" style="grid-column:4; grid-row:1;"><span>listen</span></div>
+        <div class="flow flow--listen" style="grid-column:4; grid-row:2;"><span>listen</span></div>
+        <div class="flow flow--listen" style="grid-column:4; grid-row:3;"><span>listen</span></div>
+        <div class="card hub__node" style="grid-column:5; grid-row:1; --c:var(--ok);"><span class="cartb" style="font-size:1.75cqw; color:var(--text);"><svg class="ico"><use href="#i-cart"/></svg><b>3</b></span><span>Badge on <b>Products</b> page</span></div>
+        <div class="card hub__node" style="grid-column:5; grid-row:2; --c:var(--ok);"><span class="cartb" style="font-size:1.75cqw; color:var(--text);"><svg class="ico"><use href="#i-cart"/></svg><b>3</b></span><span>Badge on <b>Cart</b> page</span></div>
+        <div class="card hub__node" style="grid-column:5; grid-row:3; --c:var(--ok);"><svg class="ico"><use href="#i-list"/></svg><span>Items text on <b>Cart</b> page</span></div>
+      </div>
+      <div class="hub-notes stagger">
+        <div class="callout callout--info"><svg class="ico"><use href="#i-database"/></svg><div><b>One place</b> for the data, outside the screens</div></div>
+        <div class="callout callout--ok"><svg class="ico"><use href="#i-bell"/></svg><div>Widgets that need it <b>listen</b> to it</div></div>
+        <div class="callout callout--warn"><svg class="ico"><use href="#i-pencil"/></svg><div>Any widget can <b>change</b> it; the data tells its listeners</div></div>
+        <div class="callout callout--info"><svg class="ico"><use href="#i-refresh"/></svg><div>Only the <b>listeners</b> rebuild, not the whole page</div></div>
+        <div class="callout callout--ok"><svg class="ico"><use href="#i-check-circle"/></svg><div><b>No callbacks</b> passed through every layer</div></div>
+      </div>
+    </div>
+    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+  </div></div>
+  <aside class="notes"><p>Every package we will see (Provider, Riverpod, Bloc, GetX) is a version of this picture. Learn the picture, and every package becomes easier.</p></aside>
+</section>
+
+<!-- 14 · ValueNotifier -->
+<section class="slide">
+  <div class="canvas"><div class="frame">
+    <header class="head">
+      <p class="kicker">Built into Flutter · no package</p>
+      <h2 class="title">Flutter's own tool: <code>ValueNotifier</code> + <code>ValueListenableBuilder</code></h2>
+    </header>
+    <div class="body walk">
+      <div class="term code">
+        <div class="term__bar"><i></i><i></i><i></i><span>lib/cart_count.dart · lib/cart_badge.dart</span></div>
+<pre class="hl" data-groups="1-2:g1;4:g2;5-15:g3">// cart_count.dart: one place for the data
+final ValueNotifier&lt;int&gt; cartCount = ValueNotifier&lt;int&gt;(0);
+
+// Change it from anywhere: cartCount.value++;
+// Listen to it inside build() (cart_badge.dart):
+ValueListenableBuilder&lt;int&gt;(
+  valueListenable: cartCount,
+  builder: (context, count, child) {
+    return Badge.count(
+      count: count,
+      isLabelVisible: count &gt; 0,
+      child: const Icon(Icons.shopping_cart),
+    );
+  },
+)</pre>
+      </div>
+      <div class="explain">
+        <div class="legend-groups stagger">
+          <div class="lg" style="--c:#13B9FD;"><span class="n">1</span><b><code>ValueNotifier</code>: one place</b><span>holds <b>one</b> value and notifies listeners when <code>.value</code> changes</span></div>
+          <div class="lg" style="--c:#FFC857;"><span class="n">2</span><b>Change it from anywhere</b><span><code>cartCount.value++;</code> in any button, on any page</span></div>
+          <div class="lg" style="--c:#4ADE80;"><span class="n">3</span><b><code>ValueListenableBuilder</code>: listen</b><span>re-runs <b>only</b> its <code>builder</code> when the value changes</span></div>
+        </div>
+        <div class="callout callout--info"><svg class="ico"><use href="#i-info"/></svg><div>A top-level (global) variable is fine for this demo. In Lecture 16, <b>Provider</b> gives us a cleaner way to share it.</div></div>
+      </div>
+    </div>
+    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+  </div></div>
+  <aside class="notes"><p>Both are built into Flutter, no package needed. A top-level (global) variable is fine for this demo. In Lecture 16, Provider gives us a cleaner way to share it. The real <code>CartBadge</code> also has a <code>debugPrint</code> line inside the builder (see the complete example).</p></aside>
+</section>
+
+<!-- 15 · Mini Shop v2 -->
+<section class="slide">
+  <div class="canvas"><div class="frame">
+    <header class="head">
+      <p class="kicker">Mini Shop v2 · ValueNotifier</p>
+      <h2 class="title">Mini Shop v2: both screens stay in sync</h2>
+    </header>
+    <div class="body" style="grid-template-columns: auto 1fr auto; gap: 2cqw; align-items:start;">
+      <div class="term code code--sm">
+        <div class="term__bar"><i></i><i></i><i></i><span>products_page.dart · cart_page.dart</span></div>
+<pre class="hl" data-groups="4:g3;12:g3">// ProductTile: no onAdd parameter any more
+trailing: IconButton(
+  onPressed: () {
+    cartCount.value++; // change the data, listeners rebuild
+  },
+  icon: const Icon(Icons.add_shopping_cart),
+),
+
+// CartPage: the "Clear cart" button
+ElevatedButton(
+  onPressed: () {
+    cartCount.value = 0;
+  },
+  child: const Text('Clear cart'),
+),</pre>
+      </div>
+      <div class="explain stagger">
+        <div class="stats">
+          <div class="card stat stat--bad"><small>v1 · console after one tap</small><b>8 lines</b><span>the whole page rebuilds</span></div>
+          <div class="card stat stat--ok"><small>v2 · console after one tap</small><b>1 line</b><span>only <code>CartBadge build: 1</code></span></div>
+        </div>
+        <div class="callout callout--ok"><svg class="ico"><use href="#i-check-circle"/></svg><div>“Clear cart” now updates <b>both</b> badges and the text at once</div></div>
+        <div class="callout callout--info"><svg class="ico"><use href="#i-layers"/></svg><div><code>ProductsPage</code> is now a <code>StatelessWidget</code>; no callbacks through <code>ProductList</code></div></div>
+        <div class="callout callout--warn"><svg class="ico"><use href="#i-refresh"/></svg><div>Changed a <code>StatefulWidget</code> to stateless? Do a <b>hot restart</b>, not a hot reload.</div></div>
+      </div>
+      <div class="ph-col">
+        <div class="ph" style="--pw:12.5cqw;">
+          <div class="ph__scr is-teal"><div class="ph__island"></div>
+            <div class="appbar"><svg class="ico-m"><use href="#i-arrow-left"/></svg><span class="grow">My Cart</span><span class="cartb"><svg class="ico"><use href="#i-cart"/></svg></span></div>
+            <div class="pbody"><div style="display:grid; justify-items:center; gap:1.1em;"><div class="m-big is-tag is-tag--ok" data-tag="updated">Items in cart: 0</div><div class="m-btn m-btn--elev">Clear cart</div></div></div>
+          </div>
+        </div>
+        <p class="ph-cap">After <b>Clear cart</b>: 0 everywhere</p>
+      </div>
+    </div>
+    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+  </div></div>
+  <aside class="notes"><p>Repeat the exact demo from slide 11: add 3, open the cart, clear. Now it works. Point out the console: one line instead of eight. The count also lives outside every page, so leaving a page no longer loses it (the Lecture 14 problem).</p><p>After turning <code>ProductsPage</code> into a <code>StatelessWidget</code>, do a hot restart: the State class was removed, so hot reload is not enough.</p></aside>
+</section>
+
+<!-- 16 · Packages overview -->
+<section class="slide">
+  <div class="canvas"><div class="frame">
+    <header class="head">
+      <p class="kicker">The landscape</p>
+      <h2 class="title">State management packages: an overview</h2>
+    </header>
+    <div class="body" style="grid-template-rows: auto auto; align-content:start; gap:1.1cqw;">
+      <table class="tbl tbl--pkgs">
+        <thead><tr><th><svg class="ico"><use href="#i-package"/></svg>Package</th><th><svg class="ico"><use href="#i-bulb"/></svg>Main idea</th><th><svg class="ico"><use href="#i-activity"/></svg>Learning curve</th><th><svg class="ico"><use href="#i-target"/></svg>Good for</th></tr></thead>
+        <tbody>
+          <tr class="is-pick"><td>Provider<code>provider</code></td><td><code>ChangeNotifier</code> classes placed above the widgets; widgets watch or read them. Built on <code>InheritedWidget</code></td><td><span class="badge badge--ok">Easy</span></td><td>Small and medium apps, beginners; used in the official Flutter docs</td></tr>
+          <tr><td>Riverpod<code>flutter_riverpod</code></td><td>Providers declared outside the widget tree, read with <code>ref</code>; strong support for data that arrives later (loading and error states). Same author as Provider</td><td><span class="badge">Medium</span></td><td>Medium and large apps, lots of data from the internet, testing</td></tr>
+          <tr><td>Bloc / Cubit<code>flutter_bloc</code></td><td>The UI sends events (Bloc) or calls methods (Cubit); new states come out</td><td><span class="badge badge--warm">Medium to high</span><span class="small muted" style="display:block; margin-top:.3cqw;">(more code)</span></td><td>Large apps and teams that want a strict, predictable structure</td></tr>
+          <tr><td>GetX<code>get</code></td><td>All-in-one: reactive variables (<code>.obs</code> + <code>Obx</code>), navigation, dependency injection</td><td><span class="badge badge--ok">Easy to start</span></td><td>Quick prototypes and small apps; it changes how you do many Flutter things, so the whole team should agree on it</td></tr>
+          <tr><td>MobX<code>mobx + flutter_mobx</code></td><td>Observables, actions and reactions; uses code generation</td><td><span class="badge">Medium</span></td><td>Developers who already know MobX from JavaScript</td></tr>
+        </tbody>
+      </table>
+      <p class="small muted"><b>Others:</b> Redux (<code>flutter_redux</code>), Signals (<code>signals</code>), and many more on pub.dev under the topic “state-management”. &nbsp;<span class="badge" style="vertical-align:.1cqw;">Highlighted: our pick, Lecture 16</span></p>
+    </div>
+    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+  </div></div>
+  <aside class="notes"><p>Be fair: all of these are used in real, published apps. They differ in how much structure they force on you and how much code you write. Do not install any of them today. The pub.dev search is <code>https://pub.dev/packages?q=topic%3Astate-management</code>.</p></aside>
+</section>
+
+<!-- 17 · Which one? -->
+<section class="slide">
+  <div class="canvas"><div class="frame">
+    <header class="head">
+      <p class="kicker">Choosing</p>
+      <h2 class="title">Which one should I use?</h2>
+      <p class="lead">Start with the simplest tool that fits, and move up as the app and the team grow.</p>
+    </header>
+    <div class="body" style="grid-template-rows: 1fr auto;">
+      <div class="journey stagger" style="grid-template-columns: repeat(4, 1fr);">
+        <div class="stop"><div class="stop__dot"><svg class="ico"><use href="#i-user"/></svg><span class="stop__n">1</span></div><h3><code>setState</code></h3><p>Local state (one widget)</p></div>
+        <div class="stop"><div class="stop__dot"><svg class="ico"><use href="#i-bell"/></svg><span class="stop__n">2</span></div><h3><code>ValueNotifier</code></h3><p>One simple shared value: it is enough</p></div>
+        <div class="stop"><div class="stop__dot" style="background:var(--grad); color:#fff; border-color:transparent;"><svg class="ico"><use href="#i-package"/></svg><span class="stop__n">3</span></div><h3>Provider <span class="badge" style="vertical-align:.2cqw;">this course</span></h3><p>Small or medium app, and learning</p></div>
+        <div class="stop"><div class="stop__dot"><svg class="ico"><use href="#i-layers"/></svg><span class="stop__n">4</span></div><h3>Riverpod or Bloc</h3><p>Bigger apps and bigger teams: popular choices</p></div>
+      </div>
+      <div style="display:grid; grid-template-columns: 1fr 1.25fr; gap:1.6cqw; align-items:stretch;">
+        <div class="callout callout--info" style="font-size:1.3cqw;"><svg class="ico"><use href="#i-bulb"/></svg><div>The ideas carry over: one place for the data, widgets listen, changes notify.</div></div>
+        <div class="callout callout--ok goal" style="align-self:stretch;"><svg class="ico"><use href="#i-arrow-right"/></svg><div><b>Next lecture: Provider:</b> <code>ChangeNotifier</code>, <code>ChangeNotifierProvider</code>, <code>Consumer</code>, <code>watch</code> and <code>read</code></div></div>
+      </div>
+    </div>
+    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+  </div></div>
+  <aside class="notes"><p>The concepts carry over: one place for the data, widgets listen, changes notify. A student who understands Provider can learn Riverpod or Bloc later much faster.</p><p><code>ValueNotifier</code> holds one value; for a list with rules (add, remove, total) we want a class with methods, which is exactly what Provider's <code>ChangeNotifier</code> gives us.</p></aside>
+</section>
+
+<!-- 18 · Meme break -->
+<section class="slide">
+  <div class="canvas"><div class="frame">
+    <header class="head">
+      <p class="kicker">Meme break</p>
+      <h2 class="title">Provider or Riverpod?</h2>
+    </header>
+    <div class="body meme-slide">
+      <figure class="meme meme--buttons" style="--mw:25cqw;"><img src="https://i.imgflip.com/1g8my4.jpg" alt="Two buttons meme: Provider or Riverpod">
+        <span class="cap cap--ink c1"><span>Provider</span></span>
+        <span class="cap cap--ink c2"><span>Riverpod</span></span>
+        <span class="cap cap--impact c3"><span>A Flutter beginner on day one of state management</span></span></figure>
+      <div class="meme-side stagger">
+        <span class="badge badge--warm">Two Buttons</span>
+        <div class="say"><p>Why is he sweating? Both buttons look right, and the internet argues about them every day. Which one would <b>you</b> press?</p></div>
+        <div class="callout callout--ok"><svg class="ico"><use href="#i-check-circle"/></svg><div>Relax: there is <b>no single right answer</b>. In this course we use <code>setState</code> for local state and <b>Provider</b> for shared state (next lecture).</div></div>
+        <div class="stagger" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:1cqw;">
+          <div class="card stat"><small>Local state</small><b style="font-size:1.8cqw;">setState</b><span>today, and all course long</span></div>
+          <div class="card stat stat--ok"><small>Shared state</small><b style="font-size:1.8cqw;">Provider</b><span>Lecture 16</span></div>
+          <div class="card stat"><small>Later</small><b style="font-size:1.8cqw;">Riverpod, Bloc</b><span>great to learn later</span></div>
+        </div>
+        <p class="meme-link">Make your own: <a href="https://imgflip.com/memegenerator/87743020" target="_blank" rel="noopener">imgflip meme generator</a> · <a href="https://knowyourmeme.com/memes/daily-struggle" target="_blank" rel="noopener">about this meme</a></p>
+      </div>
+    </div>
+    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+  </div></div>
+  <aside class="notes"><p>Relieve the stress: there is no single right answer. In this course we use setState for local state and Provider for shared state (next lecture). Riverpod and Bloc are great to learn later.</p></aside>
+</section>
+
+<!-- 19 · Summary -->
+<section class="slide">
+  <div class="canvas"><div class="frame">
+    <header class="head">
+      <p class="kicker">Wrap-up</p>
+      <h2 class="title">Summary</h2>
+    </header>
+    <div class="body wrap">
+      <article class="card card--hl">
+        <h3>Today you learned</h3>
+        <ul class="checklist stagger">
+          <li><span>State = data that changes and affects the UI; <b>UI = f(state)</b></span></li>
+          <li><span>Local state → <code>setState</code>; shared state → one shared place</span></li>
+          <li><span>Lifting state up works, but brings prop drilling, extra rebuilds and stale pushed pages</span></li>
+          <li><span><code>ValueNotifier</code> + <code>ValueListenableBuilder</code>: one place, only listeners rebuild</span></li>
+          <li><span>Many packages, one idea; next lecture: <b>Provider</b></span></li>
+        </ul>
+        <p class="small" style="margin-top:1.2cqw;"><b>One-sentence check:</b> why did the cart page in version 1 show the old number?</p>
+      </article>
+      <div class="side">
+        <div class="videos">
+          <a class="video" href="https://docs.flutter.dev/data-and-backend/state-mgmt/ephemeral-vs-app" target="_blank" rel="noopener"><span class="itile" style="width:2.6cqw; height:2.6cqw; font-size:1.3cqw; border-radius:.5cqw;"><svg class="ico"><use href="#i-book"/></svg></span><span>Read: ephemeral state vs app state</span><small>docs.flutter.dev</small></a>
+          <a class="video" href="https://pub.dev/packages?q=topic%3Astate-management" target="_blank" rel="noopener"><span class="itile" style="width:2.6cqw; height:2.6cqw; font-size:1.3cqw; border-radius:.5cqw;"><svg class="ico"><use href="#i-package"/></svg></span><span>Browse: state management packages</span><small>pub.dev</small></a>
+        </div>
+        <div class="qa__big grad-text" style="font-size:4.2cqw;">Questions?</div>
+      </div>
+    </div>
+    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+  </div></div>
+  <aside class="notes"><p>Ask one student to explain, in one sentence, why the cart page in version 1 showed the old number.</p></aside>
+</section>
+
+<!-- 20 · Homework -->
+<section class="slide">
+  <div class="canvas"><div class="frame">
+    <header class="head">
+      <p class="kicker">Practice</p>
+      <h2 class="title">Homework</h2>
+      <p class="lead">Start from Mini Shop v2. Full details are in the Homework section of the lecture notes.</p>
+    </header>
+    <div class="body stagger" style="grid-template-columns: repeat(3, 1fr); grid-template-rows: auto auto; align-content:start; gap:1.4cqw;">
+      <article class="card" style="display:grid; gap:.7cqw; align-content:start;">
+        <div style="display:flex; align-items:center; gap:.8cqw;"><span class="n">1</span><span class="badge badge--ok">Easy</span></div>
+        <h3>Local or shared?</h3>
+        <p style="font-size:1.35cqw;">Sort 8 pieces of state into local or shared, with one reason each</p>
+        <p class="small" style="color:var(--faint);">Done: 8 answers, each with a reason</p>
+      </article>
+      <article class="card" style="display:grid; gap:.7cqw; align-content:start;">
+        <div style="display:flex; align-items:center; gap:.8cqw;"><span class="n">2</span><span class="badge badge--ok">Easy</span></div>
+        <h3>Remove one</h3>
+        <p style="font-size:1.35cqw;">Add a “−” button on the cart page (never below 0)</p>
+        <p class="small" style="color:var(--faint);">Done: the badge and the text go down together and stop at 0</p>
+      </article>
+      <article class="card" style="display:grid; gap:.7cqw; align-content:start;">
+        <div style="display:flex; align-items:center; gap:.8cqw;"><span class="n">3</span><span class="badge">Medium</span></div>
+        <h3>Favorites counter</h3>
+        <p style="font-size:1.35cqw;">Add a favorites counter with a second <code>ValueNotifier</code></p>
+        <p class="small" style="color:var(--faint);">Done: a heart tap updates the heart badge on both pages</p>
+      </article>
+      <article class="card" style="display:grid; gap:.7cqw; align-content:start;">
+        <div style="display:flex; align-items:center; gap:.8cqw;"><span class="n">4</span><span class="badge">Medium</span></div>
+        <h3>Dark mode from any page</h3>
+        <p style="font-size:1.35cqw;">Control dark mode from any page with a <code>ValueNotifier&lt;bool&gt;</code></p>
+        <p class="small" style="color:var(--faint);">Done: the switch works from either page, without any <code>setState</code></p>
+      </article>
+      <article class="card" style="display:grid; gap:.7cqw; align-content:start;">
+        <div style="display:flex; align-items:center; gap:.8cqw;"><span class="n">5</span><span class="badge badge--warm">Harder</span></div>
+        <h3>A list instead of a number</h3>
+        <p style="font-size:1.35cqw;">Keep a list of product names, not just a number</p>
+        <p class="small" style="color:var(--faint);">Done: the names appear on the cart page; the badge shows the list length</p>
+      </article>
+      <article class="card card--hl" style="display:grid; gap:.7cqw; align-content:start;">
+        <div style="display:flex; align-items:center; gap:.8cqw;"><span class="itile" style="width:2.4cqw; height:2.4cqw; font-size:1.25cqw; border-radius:.5cqw;"><svg class="ico"><use href="#i-bulb"/></svg></span><span class="badge">Why number 5?</span></div>
+        <h3>Feel the next pain</h3>
+        <p style="font-size:1.35cqw;">A plain <code>ValueNotifier</code> gets awkward for lists. That pain is our reason for Provider in Lecture 16.</p>
+      </article>
+    </div>
+    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+  </div></div>
+  <aside class="notes"><p>Exercise 5 shows why a plain <code>ValueNotifier</code> gets awkward for lists. That pain is our motivation for Lecture 16.</p><p>Hint for exercise 5: <code>cartItems.value.add(name)</code> does not notify listeners, because <code>.value</code> is still the same list. Create a new list instead: <code>cartItems.value = [...cartItems.value, name];</code></p></aside>
+</section>
+
+</main>
+
+<div class="notes-panel" hidden>
+  <h4 class="np-title">Speaker notes</h4>
+  <div class="np-body"></div>
+</div>
+<div class="hint" aria-hidden="true"><kbd>←</kbd> <kbd>→</kbd> navigate · <kbd>F</kbd> fullscreen · <kbd>N</kbd> notes · <kbd>T</kbd> theme</div>
+
+<script src="js/deck.js"></script>
+</body>
+</html>
