@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Lecture 15 · State Management 1: Introduction</title>
-  <meta name="description" content="Mobile App Development with Flutter, Lecture 15: Learn what state is, when setState is enough, why sharing data between screens gets painful, and how ValueNotifier keeps a mini shop's cart in sync on every screen.">
+  <title>Lecture 13 · State Management 1: Introduction</title>
+  <meta name="description" content="Mobile App Development with Flutter, Lecture 13: Learn what state is, when setState is enough, why sharing data between screens gets painful, and how ValueNotifier keeps a mini shop's cart in sync on every screen.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Sora:wght@600;700&amp;display=swap" rel="stylesheet">
@@ -98,7 +98,7 @@
 <section class="slide">
   <div class="canvas"><div class="frame frame--title">
     <div class="stagger">
-      <p class="kicker">Lecture 15 · Mobile App Development</p>
+      <p class="kicker">Lecture 13 · Mobile App Development</p>
       <h1 class="hero">State Management 1:<br><span class="grad-text">Introduction</span></h1>
       <p class="lead lead--hero">Where should my app's data live? We feel the problem in a mini shop, then fix it with the one idea behind every state management package.</p>
       <div class="chips">
@@ -144,7 +144,7 @@
       </div>
       <div class="callout callout--ok goal"><svg class="ico"><use href="#i-target"/></svg><div><b>Goal:</b> a Mini Shop where the cart badge on <b>every</b> screen always shows the same number.</div></div>
     </div>
-    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+    <footer class="foot"><span>Mobile App Development · Lecture 13</span><span class="num"></span></footer>
   </div></div>
   <aside class="notes"><p>Read the five goals aloud. Tell students that by the end of today they will have fixed a real bug that many beginners meet in their first shop app.</p></aside>
 </section>
@@ -182,7 +182,7 @@
       </div>
       <div class="callout callout--info" style="font-size:1.35cqw;"><svg class="ico"><use href="#i-info"/></svg><div><b>Not state:</b> the app's logo or a fixed title. They never change, so they are not state.</div></div>
     </div>
-    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+    <footer class="foot"><span>Mobile App Development · Lecture 13</span><span class="num"></span></footer>
   </div></div>
   <aside class="notes"><p>Ask students for state in apps they use every day: the unread count in WhatsApp, the red heart on a liked post. Then give a “not state” example: the app's logo or a fixed title never changes, so it is not state.</p></aside>
 </section>
@@ -209,7 +209,7 @@
         <div class="callout callout--ok" style="font-size:1.45cqw;"><svg class="ico"><use href="#i-check-circle"/></svg><div><code>build()</code> is like a recipe: same data in, same screen out</div></div>
       </div>
     </div>
-    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+    <footer class="foot"><span>Mobile App Development · Lecture 13</span><span class="num"></span></footer>
   </div></div>
   <aside class="notes"><p>Remind students of Lecture 09: <code>setState</code> is how we tell Flutter “the data changed, please run <code>build()</code> again”. “f” means function: the screen is a function of the state.</p></aside>
 </section>
@@ -247,7 +247,7 @@
         <div class="callout callout--warn" style="font-size:1.3cqw;"><svg class="ico"><use href="#i-bug"/></svg><div>Result: bugs like <b>“I added an item but the cart still says 0”</b></div></div>
       </div>
     </div>
-    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+    <footer class="foot"><span>Mobile App Development · Lecture 13</span><span class="num"></span></footer>
   </div></div>
   <aside class="notes"><p>Keep it concrete. A shop app has the cart count in the AppBar of the home screen, the product screen and the cart screen. All three must always show the same number.</p></aside>
 </section>
@@ -284,7 +284,7 @@
       </table>
       <div class="callout callout--info"><svg class="ico"><use href="#i-help"/></svg><div><b>Quick quiz:</b> the selected page in a PageView? The app language? No perfect rule: if only <b>one</b> widget needs it, keep it local.</div></div>
     </div>
-    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+    <footer class="foot"><span>Mobile App Development · Lecture 13</span><span class="num"></span></footer>
   </div></div>
   <aside class="notes"><p>“Ephemeral” means short-lived; it is the word the Flutter docs use (docs.flutter.dev/data-and-backend/state-mgmt/ephemeral-vs-app). Quick quiz: “The selected page in a PageView?” (usually local) “The app language?” (shared). There is no perfect rule: if only one widget needs it, keep it local.</p></aside>
 </section>
@@ -330,7 +330,7 @@ return Scaffold(
         </div>
       </div>
     </div>
-    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+    <footer class="foot"><span>Mobile App Development · Lecture 13</span><span class="num"></span></footer>
   </div></div>
   <aside class="notes"><p>This is the counter from Lecture 09, unchanged. <code>setState</code> is not “bad”; it is the right tool for local state, and we keep using it for the rest of the course.</p></aside>
 </section>
@@ -372,13 +372,13 @@ return Scaffold(
           <li><span>“Add” on a product must update the badge</span></li>
           <li><span>“Clear cart” on the cart page must update <b>both</b> screens</span></li>
         </ul>
-        <div class="callout callout--warn"><svg class="ico"><use href="#i-alert"/></svg><div><b>Lecture 14 cliffhanger:</b> the badge forgot its number when you left the products page.</div></div>
+        <div class="callout callout--warn"><svg class="ico"><use href="#i-alert"/></svg><div><b>Lecture 12 cliffhanger:</b> the badge forgot its number when you left the products page.</div></div>
         <div class="callout callout--info" style="font-size:1.4cqw;"><svg class="ico"><use href="#i-help"/></svg><div>Where should the variable <code>cartCount</code> live?</div></div>
       </div>
     </div>
-    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+    <footer class="foot"><span>Mobile App Development · Lecture 13</span><span class="num"></span></footer>
   </div></div>
-  <aside class="notes"><p>Start from the Lecture 14 cliffhanger: the badge there forgot its number when you left the products page, because the number lived in that page's <code>State</code>, and a popped page's <code>State</code> is thrown away. Then ask the class: “Where should the variable <code>cartCount</code> live?” Collect answers before the next slide.</p></aside>
+  <aside class="notes"><p>Start from the Lecture 12 cliffhanger: the badge there forgot its number when you left the products page, because the number lived in that page's <code>State</code>, and a popped page's <code>State</code> is thrown away. Then ask the class: “Where should the variable <code>cartCount</code> live?” Collect answers before the next slide.</p></aside>
 </section>
 
 <!-- 09 · Lifting state up -->
@@ -413,7 +413,7 @@ return Scaffold(
         <div class="callout callout--info"><svg class="ico"><use href="#i-bulb"/></svg><div>A <b>callback</b> is just a function we hand to a child, like <code>onPressed</code> in Lecture 07.</div></div>
       </div>
     </div>
-    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+    <footer class="foot"><span>Mobile App Development · Lecture 13</span><span class="num"></span></footer>
   </div></div>
   <aside class="notes"><p>A callback is just a function we hand to a child, like <code>onPressed</code> in Lecture 07. The child does not know what happens; it only calls the function.</p></aside>
 </section>
@@ -463,7 +463,7 @@ body: ProductList(onAdd: _addToCart), // callback down, event up</pre>
         </div>
       </div>
     </div>
-    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+    <footer class="foot"><span>Mobile App Development · Lecture 13</span><span class="num"></span></footer>
   </div></div>
   <aside class="notes"><p>Live-code this in <code>products_page.dart</code> (complete example, version 1). Run it: tapping add on any product updates the badge. So far, so good.</p></aside>
 </section>
@@ -520,7 +520,7 @@ body: ProductList(onAdd: _addToCart), // callback down, event up</pre>
         </div>
       </div>
     </div>
-    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+    <footer class="foot"><span>Mobile App Development · Lecture 13</span><span class="num"></span></footer>
   </div></div>
   <aside class="notes"><p>Let students guess what will happen before you tap “Clear cart”. This is the moment they feel the problem. Workarounds exist (popping back with a result, copying the data into the cart page), but each one adds more code and more places for bugs.</p></aside>
 </section>
@@ -560,7 +560,7 @@ CartBadge build: 1</pre>
         </div>
       </div>
     </div>
-    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+    <footer class="foot"><span>Mobile App Development · Lecture 13</span><span class="num"></span></footer>
   </div></div>
   <aside class="notes"><p>Each <code>build()</code> in the demo has a <code>debugPrint</code> line, so the Debug Console shows every rebuild. One tap on “add” prints 8 lines, just to change one small number in the badge.</p><p>Students already met prop drilling in Lecture 10: <code>onThemeChanged</code> travelled from <code>MyApp</code> through <code>LoginPage</code> and <code>HomePage</code> down to <code>ThemeButton</code>.</p></aside>
 </section>
@@ -594,7 +594,7 @@ CartBadge build: 1</pre>
         <div class="callout callout--ok"><svg class="ico"><use href="#i-check-circle"/></svg><div><b>No callbacks</b> passed through every layer</div></div>
       </div>
     </div>
-    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+    <footer class="foot"><span>Mobile App Development · Lecture 13</span><span class="num"></span></footer>
   </div></div>
   <aside class="notes"><p>Every package we will see (Provider, Riverpod, Bloc, GetX) is a version of this picture. Learn the picture, and every package becomes easier.</p></aside>
 </section>
@@ -631,12 +631,12 @@ ValueListenableBuilder&lt;int&gt;(
           <div class="lg" style="--c:#FFC857;"><span class="n">2</span><b>Change it from anywhere</b><span><code>cartCount.value++;</code> in any button, on any page</span></div>
           <div class="lg" style="--c:#4ADE80;"><span class="n">3</span><b><code>ValueListenableBuilder</code>: listen</b><span>re-runs <b>only</b> its <code>builder</code> when the value changes</span></div>
         </div>
-        <div class="callout callout--info"><svg class="ico"><use href="#i-info"/></svg><div>A top-level (global) variable is fine for this demo. In Lecture 16, <b>Provider</b> gives us a cleaner way to share it.</div></div>
+        <div class="callout callout--info"><svg class="ico"><use href="#i-info"/></svg><div>A top-level (global) variable is fine for this demo. In Lecture 14, <b>Provider</b> gives us a cleaner way to share it.</div></div>
       </div>
     </div>
-    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+    <footer class="foot"><span>Mobile App Development · Lecture 13</span><span class="num"></span></footer>
   </div></div>
-  <aside class="notes"><p>Both are built into Flutter, no package needed. A top-level (global) variable is fine for this demo. In Lecture 16, Provider gives us a cleaner way to share it. The real <code>CartBadge</code> also has a <code>debugPrint</code> line inside the builder (see the complete example).</p></aside>
+  <aside class="notes"><p>Both are built into Flutter, no package needed. A top-level (global) variable is fine for this demo. In Lecture 14, Provider gives us a cleaner way to share it. The real <code>CartBadge</code> also has a <code>debugPrint</code> line inside the builder (see the complete example).</p></aside>
 </section>
 
 <!-- 15 · Mini Shop v2 -->
@@ -684,9 +684,9 @@ ElevatedButton(
         <p class="ph-cap">After <b>Clear cart</b>: 0 everywhere</p>
       </div>
     </div>
-    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+    <footer class="foot"><span>Mobile App Development · Lecture 13</span><span class="num"></span></footer>
   </div></div>
-  <aside class="notes"><p>Repeat the exact demo from slide 11: add 3, open the cart, clear. Now it works. Point out the console: one line instead of eight. The count also lives outside every page, so leaving a page no longer loses it (the Lecture 14 problem).</p><p>After turning <code>ProductsPage</code> into a <code>StatelessWidget</code>, do a hot restart: the State class was removed, so hot reload is not enough.</p></aside>
+  <aside class="notes"><p>Repeat the exact demo from slide 11: add 3, open the cart, clear. Now it works. Point out the console: one line instead of eight. The count also lives outside every page, so leaving a page no longer loses it (the Lecture 12 problem).</p><p>After turning <code>ProductsPage</code> into a <code>StatelessWidget</code>, do a hot restart: the State class was removed, so hot reload is not enough.</p></aside>
 </section>
 
 <!-- 16 · Packages overview -->
@@ -707,9 +707,9 @@ ElevatedButton(
           <tr><td>MobX<code>mobx + flutter_mobx</code></td><td>Observables, actions and reactions; uses code generation</td><td><span class="badge">Medium</span></td><td>Developers who already know MobX from JavaScript</td></tr>
         </tbody>
       </table>
-      <p class="small muted"><b>Others:</b> Redux (<code>flutter_redux</code>), Signals (<code>signals</code>), and many more on pub.dev under the topic “state-management”. &nbsp;<span class="badge" style="vertical-align:.1cqw;">Highlighted: our pick, Lecture 16</span></p>
+      <p class="small muted"><b>Others:</b> Redux (<code>flutter_redux</code>), Signals (<code>signals</code>), and many more on pub.dev under the topic “state-management”. &nbsp;<span class="badge" style="vertical-align:.1cqw;">Highlighted: our pick, Lecture 14</span></p>
     </div>
-    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+    <footer class="foot"><span>Mobile App Development · Lecture 13</span><span class="num"></span></footer>
   </div></div>
   <aside class="notes"><p>Be fair: all of these are used in real, published apps. They differ in how much structure they force on you and how much code you write. Do not install any of them today. The pub.dev search is <code>https://pub.dev/packages?q=topic%3Astate-management</code>.</p></aside>
 </section>
@@ -734,7 +734,7 @@ ElevatedButton(
         <div class="callout callout--ok goal" style="align-self:stretch;"><svg class="ico"><use href="#i-arrow-right"/></svg><div><b>Next lecture: Provider:</b> <code>ChangeNotifier</code>, <code>ChangeNotifierProvider</code>, <code>Consumer</code>, <code>watch</code> and <code>read</code></div></div>
       </div>
     </div>
-    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+    <footer class="foot"><span>Mobile App Development · Lecture 13</span><span class="num"></span></footer>
   </div></div>
   <aside class="notes"><p>The concepts carry over: one place for the data, widgets listen, changes notify. A student who understands Provider can learn Riverpod or Bloc later much faster.</p><p><code>ValueNotifier</code> holds one value; for a list with rules (add, remove, total) we want a class with methods, which is exactly what Provider's <code>ChangeNotifier</code> gives us.</p></aside>
 </section>
@@ -757,13 +757,13 @@ ElevatedButton(
         <div class="callout callout--ok"><svg class="ico"><use href="#i-check-circle"/></svg><div>Relax: there is <b>no single right answer</b>. In this course we use <code>setState</code> for local state and <b>Provider</b> for shared state (next lecture).</div></div>
         <div class="stagger" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:1cqw;">
           <div class="card stat"><small>Local state</small><b style="font-size:1.8cqw;">setState</b><span>today, and all course long</span></div>
-          <div class="card stat stat--ok"><small>Shared state</small><b style="font-size:1.8cqw;">Provider</b><span>Lecture 16</span></div>
+          <div class="card stat stat--ok"><small>Shared state</small><b style="font-size:1.8cqw;">Provider</b><span>Lecture 14</span></div>
           <div class="card stat"><small>Later</small><b style="font-size:1.8cqw;">Riverpod, Bloc</b><span>great to learn later</span></div>
         </div>
         <p class="meme-link">Make your own: <a href="https://imgflip.com/memegenerator/87743020" target="_blank" rel="noopener">imgflip meme generator</a> · <a href="https://knowyourmeme.com/memes/daily-struggle" target="_blank" rel="noopener">about this meme</a></p>
       </div>
     </div>
-    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+    <footer class="foot"><span>Mobile App Development · Lecture 13</span><span class="num"></span></footer>
   </div></div>
   <aside class="notes"><p>Relieve the stress: there is no single right answer. In this course we use setState for local state and Provider for shared state (next lecture). Riverpod and Bloc are great to learn later.</p></aside>
 </section>
@@ -795,7 +795,7 @@ ElevatedButton(
         <div class="qa__big grad-text" style="font-size:4.2cqw;">Questions?</div>
       </div>
     </div>
-    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+    <footer class="foot"><span>Mobile App Development · Lecture 13</span><span class="num"></span></footer>
   </div></div>
   <aside class="notes"><p>Ask one student to explain, in one sentence, why the cart page in version 1 showed the old number.</p></aside>
 </section>
@@ -842,12 +842,12 @@ ElevatedButton(
       <article class="card card--hl" style="display:grid; gap:.7cqw; align-content:start;">
         <div style="display:flex; align-items:center; gap:.8cqw;"><span class="itile" style="width:2.4cqw; height:2.4cqw; font-size:1.25cqw; border-radius:.5cqw;"><svg class="ico"><use href="#i-bulb"/></svg></span><span class="badge">Why number 5?</span></div>
         <h3>Feel the next pain</h3>
-        <p style="font-size:1.35cqw;">A plain <code>ValueNotifier</code> gets awkward for lists. That pain is our reason for Provider in Lecture 16.</p>
+        <p style="font-size:1.35cqw;">A plain <code>ValueNotifier</code> gets awkward for lists. That pain is our reason for Provider in Lecture 14.</p>
       </article>
     </div>
-    <footer class="foot"><span>Mobile App Development · Lecture 15</span><span class="num"></span></footer>
+    <footer class="foot"><span>Mobile App Development · Lecture 13</span><span class="num"></span></footer>
   </div></div>
-  <aside class="notes"><p>Exercise 5 shows why a plain <code>ValueNotifier</code> gets awkward for lists. That pain is our motivation for Lecture 16.</p><p>Hint for exercise 5: <code>cartItems.value.add(name)</code> does not notify listeners, because <code>.value</code> is still the same list. Create a new list instead: <code>cartItems.value = [...cartItems.value, name];</code></p></aside>
+  <aside class="notes"><p>Exercise 5 shows why a plain <code>ValueNotifier</code> gets awkward for lists. That pain is our motivation for Lecture 14.</p><p>Hint for exercise 5: <code>cartItems.value.add(name)</code> does not notify listeners, because <code>.value</code> is still the same list. Create a new list instead: <code>cartItems.value = [...cartItems.value, name];</code></p></aside>
 </section>
 
 </main>
