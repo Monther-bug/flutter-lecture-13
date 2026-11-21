@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Lecture 13 · State Management 1: Introduction</title>
-  <meta name="description" content="Mobile App Development with Flutter, Lecture 13: what state is, the widget tree, what setState really rebuilds (measured: 71 widgets for one tap), and how a ValueNotifier rebuilds only the widgets that listen.">
+  <meta name="description" content="Mobile App Development with Flutter, Lecture 13: what state is, the widget tree, what setState really rebuilds, the main state management tools (Provider, Riverpod, Bloc, GetX), and how to install Provider, our pick for this class.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Sora:wght@600;700&amp;display=swap" rel="stylesheet">
@@ -100,7 +100,7 @@
     <div class="stagger">
       <p class="kicker">Lecture 13 · Mobile App Development</p>
       <h1 class="hero">State Management 1:<br><span class="grad-text">Introduction</span></h1>
-      <p class="lead lead--hero">What is the widget tree, and what really happens when you call <code>setState</code>? We count the rebuilds, then fix them with one simple idea.</p>
+      <p class="lead lead--hero">What is the widget tree, and what really happens when you call <code>setState</code>? We meet the main state management tools, pick Provider for our class, and install it.</p>
       <div class="chips">
         <span class="chip"><span class="avatar">MI</span>Eng. Monther Ibrahim</span>
         <span class="chip"><span class="avatar">M</span>Muhammad, M.Sc.</span>
@@ -132,21 +132,21 @@
     <header class="head">
       <p class="kicker">Today</p>
       <h2 class="title">Learning objectives</h2>
-      <p class="lead">Today is about the <b>basics</b>. No new package: we look inside Flutter and see what one tap really does.</p>
+      <p class="lead">Today is about <b>ideas and pictures</b>, not code. At the end we install <b>Provider</b>.</p>
     </header>
     <div class="body" style="grid-template-rows: 1fr auto;">
       <div class="journey stagger">
         <div class="stop"><div class="stop__dot"><svg class="ico"><use href="#i-help"/></svg><span class="stop__n">1</span></div><h3>What is state?</h3><p>data that changes the screen</p></div>
         <div class="stop"><div class="stop__dot"><svg class="ico"><use href="#i-layers"/></svg><span class="stop__n">2</span></div><h3>The widget tree</h3><p>how Flutter sees your screen</p></div>
-        <div class="stop"><div class="stop__dot"><svg class="ico"><use href="#i-refresh"/></svg><span class="stop__n">3</span></div><h3>What setState does</h3><p>which <code>build()</code> runs again</p></div>
-        <div class="stop"><div class="stop__dot"><svg class="ico"><use href="#i-activity"/></svg><span class="stop__n">4</span></div><h3>Count the rebuilds</h3><p>the real cost of one tap</p></div>
-        <div class="stop"><div class="stop__dot"><svg class="ico"><use href="#i-bell"/></svg><span class="stop__n">5</span></div><h3>State management</h3><p>one place for the data, only listeners rebuild</p></div>
+        <div class="stop"><div class="stop__dot"><svg class="ico"><use href="#i-refresh"/></svg><span class="stop__n">3</span></div><h3>setState and rebuilds</h3><p>what one tap really rebuilds</p></div>
+        <div class="stop"><div class="stop__dot"><svg class="ico"><use href="#i-package"/></svg><span class="stop__n">4</span></div><h3>Types of state management</h3><p>Provider, Riverpod, Bloc, GetX</p></div>
+        <div class="stop"><div class="stop__dot"><svg class="ico"><use href="#i-download"/></svg><span class="stop__n">5</span></div><h3>Install Provider</h3><p>our pick, ready for Lecture 14</p></div>
       </div>
-      <div class="callout callout--ok goal"><svg class="ico"><use href="#i-target"/></svg><div><b>Goal:</b> one tap in our Mini Shop rebuilds <b>7</b> widgets instead of <b>366</b>, and every screen shows the same cart count.</div></div>
+      <div class="callout callout--ok goal"><svg class="ico"><use href="#i-target"/></svg><div><b>Goal:</b> explain why one tap can rebuild <b>366</b> widgets, know the main state management tools, and install <b>Provider</b>, our pick for this class.</div></div>
     </div>
     <footer class="foot"><span>Mobile App Development · Lecture 13</span><span class="num"></span></footer>
   </div></div>
-  <aside class="notes"><p>Read the five goals aloud. The two numbers in the goal are real: we measured them in Flutter. By the end of the lecture students will know why one tap can rebuild 366 widgets.</p></aside>
+  <aside class="notes"><p>Read the five goals aloud. Today there is almost no code: we look at pictures of what Flutter does. The numbers are real: we measured them in Flutter. Next lecture we write the code with Provider.</p></aside>
 </section>
 
 <!-- 03 · What is state? -->
@@ -267,7 +267,7 @@
       <p class="kicker">Under the hood</p>
       <h2 class="title">What does <code>setState</code> do?</h2>
     </header>
-    <div class="body" style="grid-template-rows: auto auto auto; align-content:center; gap:2.2cqw;">
+    <div class="body" style="grid-template-rows: auto auto; align-content:center; gap:3.4cqw;">
       <div class="journey stagger" style="align-items:start;">
         <div class="stop"><div class="stop__dot"><svg class="ico"><use href="#i-mouse"/></svg><span class="stop__n">1</span></div><h3>You tap +</h3><p><code>onPressed</code> runs</p></div>
         <div class="stop"><div class="stop__dot"><svg class="ico"><use href="#i-pencil"/></svg><span class="stop__n">2</span></div><h3>Change the data</h3><p>inside <code>setState</code></p></div>
@@ -275,17 +275,10 @@
         <div class="stop"><div class="stop__dot"><svg class="ico"><use href="#i-refresh"/></svg><span class="stop__n">4</span></div><h3><code>build()</code> runs again</h3><p>for <code>CounterPage</code> and everything inside it</p></div>
         <div class="stop"><div class="stop__dot"><svg class="ico"><use href="#i-phone"/></svg><span class="stop__n">5</span></div><h3>Screen updates</h3><p>the new number appears</p></div>
       </div>
-      <div class="term code" style="justify-self:center; width:62cqw;">
-        <div class="term__bar"><i></i><i></i><i></i><span>lib/counter_page.dart</span><span class="grow"></span><span>_CounterPageState</span></div>
-<pre class="hl" data-hl="2-4">onPressed: () {
-  setState(() {
-    count++; // step 2: change the data
-  }); // step 3: Flutter marks CounterPage as dirty
-},</pre>
-      </div>
-      <div class="stagger" style="display:grid; grid-template-columns: 1fr 1fr; gap:1.4cqw;">
+      <div class="stagger" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:1.4cqw;">
         <div class="callout callout--info"><svg class="ico"><use href="#i-info"/></svg><div><b>Dirty</b> just means: this widget is out of date and must <code>build()</code> again.</div></div>
-        <div class="callout callout--warn"><svg class="ico"><use href="#i-alert"/></svg><div><code>setState</code> rebuilds the <b>whole widget</b> it is in, and everything inside it, not only the <code>Text</code> with the number.</div></div>
+        <div class="callout callout--warn"><svg class="ico"><use href="#i-alert"/></svg><div><code>setState</code> rebuilds the <b>whole widget</b> it is in, and everything inside it, not only the number.</div></div>
+        <div class="callout callout--ok"><svg class="ico"><use href="#i-check-circle"/></svg><div>Perfect for <b>local</b> state: one widget, one small change, like a like button or a checkbox.</div></div>
       </div>
     </div>
     <footer class="foot"><span>Mobile App Development · Lecture 13</span><span class="num"></span></footer>
@@ -293,53 +286,7 @@
   <aside class="notes"><p>Walk through the five steps slowly. The important sentence is step 4: Flutter does not know that only the number changed, so it runs <code>build()</code> for the whole <code>CounterPage</code>. The next slides show exactly what that means.</p></aside>
 </section>
 
-<!-- 07 · setState recap: the counter -->
-<section class="slide">
-  <div class="canvas"><div class="frame">
-    <header class="head">
-      <p class="kicker">Recap · Lecture 09</p>
-      <h2 class="title"><code>setState</code> recap: where it shines</h2>
-    </header>
-    <div class="body" style="grid-template-columns: 1fr auto; gap: 2.4cqw; align-items:start;">
-      <div class="side">
-        <div class="term code">
-          <div class="term__bar"><i></i><i></i><i></i><span>lib/counter_page.dart</span><span class="grow"></span><span>_CounterPageState</span></div>
-<pre class="hl" data-hl="1,6,9-11">int count = 0; // in _CounterPageState: the state
-
-// in build():
-return Scaffold(
-  appBar: AppBar(title: const Text('Counter')),
-  body: Center(child: Text('$count', style: const TextStyle(fontSize: 64))),
-  floatingActionButton: FloatingActionButton(
-    onPressed: () {
-      setState(() {
-        count++; // change the data inside setState
-      });
-    },
-    child: const Icon(Icons.add),
-  ),
-);</pre>
-        </div>
-        <div class="stagger" style="display:grid; grid-template-columns: 1fr 1fr 1.25fr; gap:1.2cqw;">
-          <div class="callout callout--ok" style="font-size:1.25cqw;"><svg class="ico"><use href="#i-package"/></svg><div>Built into Flutter, <b>no package</b>, very little code</div></div>
-          <div class="callout callout--ok" style="font-size:1.25cqw;"><svg class="ico"><use href="#i-user"/></svg><div>Perfect when <b>only this widget</b> uses the data</div></div>
-          <div class="callout callout--info" style="font-size:1.25cqw;"><svg class="ico"><use href="#i-heart"/></svg><div>Examples: the like button from Lecture 09, a show/hide password icon, a checkbox, a tab index</div></div>
-        </div>
-      </div>
-      <div class="ph" style="--pw:14cqw;">
-        <div class="ph__scr"><div class="ph__island"></div>
-          <div class="appbar">Counter</div>
-          <div class="pbody"><div style="font-size:4.4em; line-height:1;">3</div></div>
-          <div class="m-fab"><svg class="ico"><use href="#i-plus"/></svg></div>
-        </div>
-      </div>
-    </div>
-    <footer class="foot"><span>Mobile App Development · Lecture 13</span><span class="num"></span></footer>
-  </div></div>
-  <aside class="notes"><p>This is the counter from Lecture 09, unchanged. <code>setState</code> is not “bad”; it is the right tool for local state, and we keep using it for the rest of the course.</p></aside>
-</section>
-
-<!-- 08 · One tap: what rebuilds? -->
+<!-- 07 · One tap: what rebuilds? -->
 <section class="slide">
   <div class="canvas"><div class="frame">
     <header class="head">
@@ -378,10 +325,10 @@ return Scaffold(
     </div>
     <footer class="foot"><span>Mobile App Development · Lecture 13</span><span class="num"></span></footer>
   </div></div>
-  <aside class="notes"><p>Click "Tap +" a few times: the red boxes flash, and every tap costs 71 rebuilds. For one small page that is fine, Flutter is fast. Later today the same change will rebuild only 2 widgets.</p><p>How we measured: a widget test that counts every widget whose <code>build()</code> runs after one change (<code>debugOnRebuildDirtyWidget</code>). DevTools uses the same counter: Performance page, turn on "Track widget build counts", then open "Rebuild Stats".</p><p><code>Center</code> has no <code>build()</code> method of its own, but it is created again and updated, so we colour it red too.</p></aside>
+  <aside class="notes"><p>Click "Tap +" a few times: the red boxes flash, and every tap costs 71 rebuilds. For one small page that is fine, Flutter is fast. Later today we will see one tap that rebuilds 7 widgets instead of 366.</p><p>How we measured: a widget test that counts every widget whose <code>build()</code> runs after one change (<code>debugOnRebuildDirtyWidget</code>). DevTools uses the same counter: Performance page, turn on "Track widget build counts", then open "Rebuild Stats".</p><p><code>Center</code> has no <code>build()</code> method of its own, but it is created again and updated, so we colour it red too.</p></aside>
 </section>
 
-<!-- 09 · Local vs shared -->
+<!-- 08 · Local vs shared -->
 <section class="slide">
   <div class="canvas"><div class="frame">
     <header class="head">
@@ -408,7 +355,7 @@ return Scaffold(
               <span class="chip"><svg class="ico"><use href="#i-globe"/></svg>language</span>
               <span class="chip"><svg class="ico"><use href="#i-heart"/></svg>favorites</span>
             </div></td></tr>
-          <tr><td>Tool</td><td><code>setState</code></td><td>one shared place (today <code>ValueNotifier</code>, next lecture Provider)</td></tr>
+          <tr><td>Tool</td><td><code>setState</code></td><td>state management (in our class: <b>Provider</b>)</td></tr>
         </tbody>
       </table>
       <div class="callout callout--info"><svg class="ico"><use href="#i-help"/></svg><div><b>Quick quiz:</b> the selected page in a PageView? The app language? No perfect rule: if only <b>one</b> widget needs it, keep it local.</div></div>
@@ -418,311 +365,39 @@ return Scaffold(
   <aside class="notes"><p>“Ephemeral” means short-lived; it is the word the Flutter docs use (docs.flutter.dev/data-and-backend/state-mgmt/ephemeral-vs-app). Quick quiz: “The selected page in a PageView?” (usually local) “The app language?” (shared). There is no perfect rule: if only one widget needs it, keep it local.</p></aside>
 </section>
 
-<!-- 10 · The Mini Shop -->
-<section class="slide">
-  <div class="canvas"><div class="frame">
-    <header class="head">
-      <p class="kicker">Our demo app</p>
-      <h2 class="title">The Mini Shop: our problem</h2>
-    </header>
-    <div class="body" style="grid-template-columns: auto auto auto 1fr; gap: 1.6cqw; align-items:center;">
-      <div class="ph-col">
-        <div class="ph" style="--pw:14.4cqw;">
-          <div class="ph__scr is-teal"><div class="ph__island"></div>
-            <div class="appbar"><span class="grow">Mini Shop</span><span class="cartb is-tag is-tag--left" data-tag="count"><svg class="ico"><use href="#i-cart"/></svg><b>3</b></span></div>
-            <div class="m-tile"><svg class="ico"><use href="#i-bag"/></svg><span>Dates</span><svg class="ico"><use href="#i-cart-plus"/></svg></div>
-            <div class="m-tile"><svg class="ico"><use href="#i-bag"/></svg><span>Olive oil</span><svg class="ico"><use href="#i-cart-plus"/></svg></div>
-            <div class="m-tile"><svg class="ico"><use href="#i-bag"/></svg><span>Couscous</span><svg class="ico"><use href="#i-cart-plus"/></svg></div>
-            <div class="m-tile"><svg class="ico"><use href="#i-bag"/></svg><span>Green tea</span><svg class="ico"><use href="#i-cart-plus"/></svg></div>
-            <div class="m-tile"><svg class="ico"><use href="#i-bag"/></svg><span>Harissa</span><svg class="ico"><use href="#i-cart-plus"/></svg></div>
-          </div>
-        </div>
-        <p class="ph-cap"><b>Mini Shop</b>: 5 products</p>
-      </div>
-      <div class="arrow-mid" style="gap:.4cqw;"><svg class="ico"><use href="#i-arrow-right"/></svg><small style="font:600 .9cqw/1 var(--font-mono); color:var(--muted);">push</small></div>
-      <div class="ph-col">
-        <div class="ph" style="--pw:14.4cqw;">
-          <div class="ph__scr is-teal"><div class="ph__island"></div>
-            <div class="appbar"><svg class="ico-m"><use href="#i-arrow-left"/></svg><span class="grow">My Cart</span><span class="cartb is-tag is-tag--left" data-tag="count"><svg class="ico"><use href="#i-cart"/></svg><b>3</b></span></div>
-            <div class="pbody"><div style="display:grid; justify-items:center; gap:1.1em;"><div class="m-big is-tag" data-tag="count">Items in cart: 3</div><div class="m-btn m-btn--elev">Clear cart</div></div></div>
-          </div>
-        </div>
-        <p class="ph-cap"><b>My Cart</b>: the cart page</p>
-      </div>
-      <div class="side">
-        <ul class="checklist stagger" style="margin-top:0;">
-          <li><span><b>Both</b> AppBars need the cart count</span></li>
-          <li><span>“Add” on a product must update the badge</span></li>
-          <li><span>“Clear cart” on the cart page must update <b>both</b> screens</span></li>
-        </ul>
-        <div class="callout callout--warn"><svg class="ico"><use href="#i-alert"/></svg><div><b>Lecture 12 cliffhanger:</b> the badge forgot its number when you left the products page.</div></div>
-        <div class="callout callout--info" style="font-size:1.4cqw;"><svg class="ico"><use href="#i-help"/></svg><div>Where should the variable <code>cartCount</code> live?</div></div>
-      </div>
-    </div>
-    <footer class="foot"><span>Mobile App Development · Lecture 13</span><span class="num"></span></footer>
-  </div></div>
-  <aside class="notes"><p>Start from the Lecture 12 cliffhanger: the badge there forgot its number when you left the products page, because the number lived in that page's <code>State</code>, and a popped page's <code>State</code> is thrown away. Then ask the class: “Where should the variable <code>cartCount</code> live?” Collect answers before the next slide.</p></aside>
-</section>
-
-<!-- 11 · Lifting state up -->
-<section class="slide">
-  <div class="canvas"><div class="frame">
-    <header class="head">
-      <p class="kicker">Idea 1 · Use what we know</p>
-      <h2 class="title">Lifting state up</h2>
-    </header>
-    <div class="body" style="grid-template-columns: 1.12fr .88fr; gap: 2.4cqw; align-items:center;">
-      <div class="card" style="padding:2.2cqw 1.2cqw;">
-        <div class="wt wt--lg">
-          <ul><li><span class="nd nd--hl">ProductsPage<small>owns _cartCount (lifted up here)</small></span>
-            <ul>
-              <li><span class="slot">appBar:</span><span class="nd">AppBar</span>
-                <ul><li><span class="nd nd--data">CartBadge(count)<small>↓ data goes down</small></span></li></ul>
-              </li>
-              <li><span class="slot">body:</span><span class="nd nd--cb">ProductList(onAdd)<small>↓ callback goes down</small></span>
-                <ul><li><span class="nd nd--up">ProductTile(onAdd)<small>↑ event goes up: onAdd() → setState</small></span></li></ul>
-              </li>
-            </ul>
-          </li></ul>
-        </div>
-      </div>
-      <div class="side">
-        <ol class="steps bigsteps stagger">
-          <li><span>Find the <b>closest common parent</b> of every widget that needs the data</span></li>
-          <li><span>Move the data and <code>setState</code> into that parent</span></li>
-          <li><span>Pass <b>data down</b> as constructor parameters</span></li>
-          <li><span>Pass <b>callbacks down</b>; children call them to send events <b>up</b></span></li>
-        </ol>
-        <div class="callout callout--info"><svg class="ico"><use href="#i-bulb"/></svg><div>A <b>callback</b> is just a function we hand to a child, like <code>onPressed</code> in Lecture 07.</div></div>
-      </div>
-    </div>
-    <footer class="foot"><span>Mobile App Development · Lecture 13</span><span class="num"></span></footer>
-  </div></div>
-  <aside class="notes"><p>A callback is just a function we hand to a child, like <code>onPressed</code> in Lecture 07. The child does not know what happens; it only calls the function.</p></aside>
-</section>
-
-<!-- 12 · The bug -->
-<section class="slide">
-  <div class="canvas"><div class="frame">
-    <header class="head">
-      <p class="kicker">Mini Shop v1 · The bug</p>
-      <h2 class="title">Opening the cart page... and a bug</h2>
-    </header>
-    <div class="body" style="grid-template-columns: 1fr auto; gap: 2.4cqw; align-items:start;">
-      <div class="side">
-        <div class="term code">
-          <div class="term__bar"><i></i><i></i><i></i><span>lib/products_page.dart</span><span class="grow"></span><span>_ProductsPageState</span></div>
-<pre class="hl" data-hl="5">void _openCart() {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) =&gt; CartPage(count: _cartCount, onClear: _clearCart),
-    ),
-  );
-}</pre>
-        </div>
-        <ol class="steps stagger">
-          <li><span><b>Try it:</b> add 3 items, open the cart, it says “Items in cart: 3”</span></li>
-          <li><span>Tap “Clear cart”: the cart page <b>still says 3</b></span></li>
-          <li><span>Go back: the products page badge is empty (0)</span></li>
-        </ol>
-        <div class="callout callout--warn"><svg class="ico"><use href="#i-bug"/></svg><div><b>Why?</b> <code>CartPage</code> got a <b>copy</b> of the number when it opened. A pushed page is not a child of <code>ProductsPage</code>, so <code>setState</code> there does not rebuild it.</div></div>
-      </div>
-      <div class="phones" style="gap:1.6cqw;">
-        <div class="ph-col">
-          <div class="ph" style="--pw:12.4cqw;">
-            <div class="ph__scr is-teal"><div class="ph__island"></div>
-              <div class="appbar"><svg class="ico-m"><use href="#i-arrow-left"/></svg><span class="grow">My Cart</span><span class="cartb"><svg class="ico"><use href="#i-cart"/></svg><b>3</b></span></div>
-              <div class="pbody"><div style="display:grid; justify-items:center; gap:1.1em;"><div class="m-big is-tag is-tag--bad" data-tag="still 3!">Items in cart: 3</div><div class="m-btn m-btn--elev">Clear cart</div></div></div>
-            </div>
-          </div>
-          <p class="ph-cap">After tapping <b>Clear cart</b></p>
-        </div>
-        <div class="ph-col">
-          <div class="ph" style="--pw:12.4cqw;">
-            <div class="ph__scr is-teal"><div class="ph__island"></div>
-              <div class="appbar"><span class="grow">Mini Shop</span><span class="cartb is-tag is-tag--left" data-tag="0"><svg class="ico"><use href="#i-cart"/></svg></span></div>
-              <div class="m-tile"><svg class="ico"><use href="#i-bag"/></svg><span>Dates</span><svg class="ico"><use href="#i-cart-plus"/></svg></div>
-              <div class="m-tile"><svg class="ico"><use href="#i-bag"/></svg><span>Olive oil</span><svg class="ico"><use href="#i-cart-plus"/></svg></div>
-              <div class="m-tile"><svg class="ico"><use href="#i-bag"/></svg><span>Couscous</span><svg class="ico"><use href="#i-cart-plus"/></svg></div>
-              <div class="m-tile"><svg class="ico"><use href="#i-bag"/></svg><span>Green tea</span><svg class="ico"><use href="#i-cart-plus"/></svg></div>
-              <div class="m-tile"><svg class="ico"><use href="#i-bag"/></svg><span>Harissa</span><svg class="ico"><use href="#i-cart-plus"/></svg></div>
-            </div>
-          </div>
-          <p class="ph-cap">After going <b>back</b></p>
-        </div>
-      </div>
-    </div>
-    <footer class="foot"><span>Mobile App Development · Lecture 13</span><span class="num"></span></footer>
-  </div></div>
-  <aside class="notes"><p>Let students guess what will happen before you tap “Clear cart”. This is the moment they feel the problem. Workarounds exist (popping back with a result, copying the data into the cart page), but each one adds more code and more places for bugs.</p></aside>
-</section>
-
-<!-- 13 · The pains -->
+<!-- 09 · The pains -->
 <section class="slide">
   <div class="canvas"><div class="frame">
     <header class="head">
       <p class="kicker">Why it hurts</p>
-      <h2 class="title">The pains in bigger apps</h2>
+      <h2 class="title">The pains of <code>setState</code> in bigger apps</h2>
     </header>
-    <div class="body" style="grid-template-columns: 1.08fr .92fr; gap: 2.2cqw; align-items:start;">
+    <div class="body" style="grid-template-columns: 1fr 1fr; gap: 2.4cqw; align-items:center;">
       <div class="legend-groups stagger">
-        <div class="lg" style="--c:#F87171;"><span class="n">1</span><b>Prop drilling</b><span><code>ProductList</code> takes <code>onAdd</code> only to pass it on. (“Prop” = a constructor parameter; “drilling” = passing it through many layers.) Imagine 5 layers</span></div>
-        <div class="lg" style="--c:#F87171;"><span class="n">2</span><b>Rebuilding too much</b><span>one tap rebuilds the whole page (console on the right)</span></div>
-        <div class="lg" style="--c:#F87171;"><span class="n">3</span><b>Logic mixed with UI</b><span>the cart rules live inside a page's <code>State</code></span></div>
-        <div class="lg" style="--c:#F87171;"><span class="n">4</span><b>Hard to test</b><span>to test “add to cart” you must build the whole page</span></div>
-        <div class="lg" style="--c:#F87171;"><span class="n">5</span><b>Other screens don't hear the change</b><span>the stale cart page from slide 12</span></div>
+        <div class="lg" style="--c:#F87171;"><span class="n">1</span><b>Passing data through many layers</b><span>“Prop drilling”: a widget takes the data only to hand it to its child. Imagine 5 layers.</span></div>
+        <div class="lg" style="--c:#F87171;"><span class="n">2</span><b>Rebuilding too much</b><span>one tap rebuilds the whole page to change one small badge</span></div>
+        <div class="lg" style="--c:#F87171;"><span class="n">3</span><b>Other screens don't hear the change</b><span>the cart page keeps an old copy of the number</span></div>
+        <div class="callout callout--info" style="font-size:1.3cqw;"><svg class="ico"><use href="#i-bulb"/></svg><div>A small app: no problem. A real app with 10 screens: these pains grow fast.</div></div>
       </div>
-      <div class="side">
-        <div class="card" style="padding:1.2cqw 1.4cqw 1.5cqw;">
-          <span class="badge badge--warm" style="margin-bottom:.4cqw;">1 · Prop drilling</span>
-          <div class="wt wt--lg">
-            <ul><li><span class="nd nd--hl">ProductsPage<small>owns _cartCount and _addToCart</small></span>
-              <ul><li><span class="nd nd--warn">ProductList(onAdd)<small>doesn't use onAdd, only passes it on</small></span>
-                <ul><li><span class="nd nd--up">ProductTile(onAdd)<small>finally uses it in its IconButton</small></span></li></ul>
+      <div class="card" style="padding:1.6cqw 1.2cqw 1.8cqw; display:grid; gap:.8cqw;">
+        <span class="badge badge--warm" style="justify-self:start;">1 · Prop drilling</span>
+        <div class="wt wt--md">
+          <ul><li><span class="nd nd--hl">ProductsPage<small>has the cart count</small></span>
+            <ul><li><span class="nd nd--warn">ProductList<small>doesn't need it, only passes it on</small></span>
+              <ul><li><span class="nd nd--warn">ProductTile<small>doesn't need it either</small></span>
+                <ul><li><span class="nd nd--up">Add button<small>finally uses it</small></span></li></ul>
               </li></ul>
             </li></ul>
-          </div>
-        </div>
-        <div class="term">
-          <div class="term__bar"><i></i><i></i><i></i><span>Debug Console</span><span class="grow"></span><span>2 · one tap on add</span></div>
-<pre>ProductsPage build
-ProductList build
-ProductTile build: Dates   <span class="t-c">... (all 5 tiles)</span>
-CartBadge build: 1</pre>
+          </li></ul>
         </div>
       </div>
     </div>
     <footer class="foot"><span>Mobile App Development · Lecture 13</span><span class="num"></span></footer>
   </div></div>
-  <aside class="notes"><p>Each <code>build()</code> in the demo has a <code>debugPrint</code> line, so the Debug Console shows every rebuild. One tap on “add” prints 8 lines, just to change one small number in the badge.</p><p>Students already met prop drilling in Lecture 10: <code>onThemeChanged</code> travelled from <code>MyApp</code> through <code>LoginPage</code> and <code>HomePage</code> down to <code>ThemeButton</code>.</p></aside>
+  <aside class="notes"><p>Students already met prop drilling in Lecture 10: <code>onThemeChanged</code> travelled from <code>MyApp</code> through <code>LoginPage</code> and <code>HomePage</code> down to <code>ThemeButton</code>. Ask: "How many widgets carried it without using it?"</p></aside>
 </section>
 
-<!-- 14 · Why solutions exist -->
-<section class="slide">
-  <div class="canvas"><div class="frame">
-    <header class="head">
-      <p class="kicker">The big idea</p>
-      <h2 class="title">Why state management solutions exist</h2>
-    </header>
-    <div class="body" style="grid-template-rows: auto auto; align-content:center; gap: 2.8cqw;">
-      <div class="hub">
-        <div class="card hub__node" style="grid-column:1; grid-row:1; --c:var(--warm);"><svg class="ico"><use href="#i-cart-plus"/></svg><span><b>Add</b> button</span></div>
-        <div class="flow flow--change" style="grid-column:2; grid-row:1;"><span>change</span></div>
-        <div class="card hub__node" style="grid-column:1; grid-row:3; --c:var(--warm);"><svg class="ico"><use href="#i-x"/></svg><span><b>Clear cart</b> button</span></div>
-        <div class="flow flow--change" style="grid-column:2; grid-row:3;"><span>change</span></div>
-        <div class="card card--hl hub__core"><svg class="ico"><use href="#i-database"/></svg><h3>Cart data</h3><p><b>one place</b>,<br>outside all screens</p></div>
-        <div class="flow flow--listen" style="grid-column:4; grid-row:1;"><span>listen</span></div>
-        <div class="flow flow--listen" style="grid-column:4; grid-row:2;"><span>listen</span></div>
-        <div class="flow flow--listen" style="grid-column:4; grid-row:3;"><span>listen</span></div>
-        <div class="card hub__node" style="grid-column:5; grid-row:1; --c:var(--ok);"><span class="cartb" style="font-size:1.75cqw; color:var(--text);"><svg class="ico"><use href="#i-cart"/></svg><b>3</b></span><span>Badge on <b>Products</b> page</span></div>
-        <div class="card hub__node" style="grid-column:5; grid-row:2; --c:var(--ok);"><span class="cartb" style="font-size:1.75cqw; color:var(--text);"><svg class="ico"><use href="#i-cart"/></svg><b>3</b></span><span>Badge on <b>Cart</b> page</span></div>
-        <div class="card hub__node" style="grid-column:5; grid-row:3; --c:var(--ok);"><svg class="ico"><use href="#i-list"/></svg><span>Items text on <b>Cart</b> page</span></div>
-      </div>
-      <div class="hub-notes stagger">
-        <div class="callout callout--info"><svg class="ico"><use href="#i-database"/></svg><div><b>One place</b> for the data, outside the screens</div></div>
-        <div class="callout callout--ok"><svg class="ico"><use href="#i-bell"/></svg><div>Widgets that need it <b>listen</b> to it</div></div>
-        <div class="callout callout--warn"><svg class="ico"><use href="#i-pencil"/></svg><div>Any widget can <b>change</b> it; the data tells its listeners</div></div>
-        <div class="callout callout--info"><svg class="ico"><use href="#i-refresh"/></svg><div>Only the <b>listeners</b> rebuild, not the whole page</div></div>
-        <div class="callout callout--ok"><svg class="ico"><use href="#i-check-circle"/></svg><div><b>No callbacks</b> passed through every layer</div></div>
-      </div>
-    </div>
-    <footer class="foot"><span>Mobile App Development · Lecture 13</span><span class="num"></span></footer>
-  </div></div>
-  <aside class="notes"><p>Every package we will see (Provider, Riverpod, Bloc, GetX) is a version of this picture. Learn the picture, and every package becomes easier.</p></aside>
-</section>
-
-<!-- 15 · ValueNotifier -->
-<section class="slide">
-  <div class="canvas"><div class="frame">
-    <header class="head">
-      <p class="kicker">Built into Flutter · no package</p>
-      <h2 class="title">Flutter's own tool: <code>ValueNotifier</code> + <code>ValueListenableBuilder</code></h2>
-    </header>
-    <div class="body walk">
-      <div class="term code">
-        <div class="term__bar"><i></i><i></i><i></i><span>lib/cart_count.dart · lib/cart_badge.dart</span></div>
-<pre class="hl" data-groups="1-2:g1;4:g2;5-15:g3">// cart_count.dart: one place for the data
-final ValueNotifier&lt;int&gt; cartCount = ValueNotifier&lt;int&gt;(0);
-
-// Change it from anywhere: cartCount.value++;
-// Listen to it inside build() (cart_badge.dart):
-ValueListenableBuilder&lt;int&gt;(
-  valueListenable: cartCount,
-  builder: (context, count, child) {
-    return Badge.count(
-      count: count,
-      isLabelVisible: count &gt; 0,
-      child: const Icon(Icons.shopping_cart),
-    );
-  },
-)</pre>
-      </div>
-      <div class="explain">
-        <div class="legend-groups stagger">
-          <div class="lg" style="--c:#13B9FD;"><span class="n">1</span><b><code>ValueNotifier</code>: one place</b><span>holds <b>one</b> value and notifies listeners when <code>.value</code> changes</span></div>
-          <div class="lg" style="--c:#FFC857;"><span class="n">2</span><b>Change it from anywhere</b><span><code>cartCount.value++;</code> in any button, on any page</span></div>
-          <div class="lg" style="--c:#4ADE80;"><span class="n">3</span><b><code>ValueListenableBuilder</code>: listen</b><span>re-runs <b>only</b> its <code>builder</code> when the value changes</span></div>
-        </div>
-        <div class="callout callout--info"><svg class="ico"><use href="#i-info"/></svg><div>A top-level (global) variable is fine for this demo. In Lecture 14, <b>Provider</b> gives us a cleaner way to share it.</div></div>
-      </div>
-    </div>
-    <footer class="foot"><span>Mobile App Development · Lecture 13</span><span class="num"></span></footer>
-  </div></div>
-  <aside class="notes"><p>Both are built into Flutter, no package needed. A top-level (global) variable is fine for this demo. In Lecture 14, Provider gives us a cleaner way to share it. The real <code>CartBadge</code> also has a <code>debugPrint</code> line inside the builder (see the complete example).</p></aside>
-</section>
-
-<!-- 16 · Mini Shop v2 -->
-<section class="slide">
-  <div class="canvas"><div class="frame">
-    <header class="head">
-      <p class="kicker">Mini Shop v2 · ValueNotifier</p>
-      <h2 class="title">Mini Shop v2: both screens stay in sync</h2>
-    </header>
-    <div class="body" style="grid-template-columns: auto 1fr auto; gap: 2cqw; align-items:start;">
-      <div class="term code code--sm">
-        <div class="term__bar"><i></i><i></i><i></i><span>products_page.dart · cart_page.dart</span></div>
-<pre class="hl" data-groups="4:g3;12:g3">// ProductTile: no onAdd parameter any more
-trailing: IconButton(
-  onPressed: () {
-    cartCount.value++; // change the data, listeners rebuild
-  },
-  icon: const Icon(Icons.add_shopping_cart),
-),
-
-// CartPage: the "Clear cart" button
-ElevatedButton(
-  onPressed: () {
-    cartCount.value = 0;
-  },
-  child: const Text('Clear cart'),
-),</pre>
-      </div>
-      <div class="explain stagger">
-        <div class="stats">
-          <div class="card stat stat--bad"><small>v1 · console after one tap</small><b>8 lines</b><span>the whole page rebuilds</span></div>
-          <div class="card stat stat--ok"><small>v2 · console after one tap</small><b>1 line</b><span>only <code>CartBadge build: 1</code></span></div>
-        </div>
-        <div class="callout callout--ok"><svg class="ico"><use href="#i-check-circle"/></svg><div>“Clear cart” now updates <b>both</b> badges and the text at once</div></div>
-        <div class="callout callout--info"><svg class="ico"><use href="#i-layers"/></svg><div><code>ProductsPage</code> is now a <code>StatelessWidget</code>; no callbacks through <code>ProductList</code></div></div>
-        <div class="callout callout--warn"><svg class="ico"><use href="#i-refresh"/></svg><div>Changed a <code>StatefulWidget</code> to stateless? Do a <b>hot restart</b>, not a hot reload.</div></div>
-      </div>
-      <div class="ph-col">
-        <div class="ph" style="--pw:12.5cqw;">
-          <div class="ph__scr is-teal"><div class="ph__island"></div>
-            <div class="appbar"><svg class="ico-m"><use href="#i-arrow-left"/></svg><span class="grow">My Cart</span><span class="cartb"><svg class="ico"><use href="#i-cart"/></svg></span></div>
-            <div class="pbody"><div style="display:grid; justify-items:center; gap:1.1em;"><div class="m-big is-tag is-tag--ok" data-tag="updated">Items in cart: 0</div><div class="m-btn m-btn--elev">Clear cart</div></div></div>
-          </div>
-        </div>
-        <p class="ph-cap">After <b>Clear cart</b>: 0 everywhere</p>
-      </div>
-    </div>
-    <footer class="foot"><span>Mobile App Development · Lecture 13</span><span class="num"></span></footer>
-  </div></div>
-  <aside class="notes"><p>Repeat the exact demo from slide 12: add 3, open the cart, clear. Now it works. Point out the console: one line instead of eight. The count also lives outside every page, so leaving a page no longer loses it (the Lecture 12 problem).</p><p>After turning <code>ProductsPage</code> into a <code>StatelessWidget</code>, do a hot restart: the State class was removed, so hot reload is not enough.</p></aside>
-</section>
-
-<!-- 17 · Performance: setState vs state management -->
+<!-- 10 · Performance: setState vs state management -->
 <section class="slide">
   <div class="canvas"><div class="frame">
     <header class="head">
@@ -745,7 +420,7 @@ ElevatedButton(
         <p class="perf__foot">The whole page rebuilds · console: <b>8 lines</b></p>
       </article>
       <article class="card perf perf--ok">
-        <div class="perf__head"><span class="badge badge--ok">v2 · ValueNotifier</span><span class="perf__num"><b>7</b>rebuilt</span></div>
+        <div class="perf__head"><span class="badge badge--ok">v2 · state management</span><span class="perf__num"><b>7</b>rebuilt</span></div>
         <div class="wt rb-tree rb-tree--sm">
           <ul><li><span class="nd nd--same">ProductsPage<small>not rebuilt</small></span>
             <ul><li><span class="nd nd--same">Scaffold</span>
@@ -760,7 +435,7 @@ ElevatedButton(
       </article>
       <div class="perf-bars" style="grid-column: 1 / -1;">
         <div class="pbar"><span class="pbar__lbl">v1 · setState</span><span class="pbar__track"><span class="pbar__fill pbar__fill--bad" style="--w:100%;"></span></span><b>366</b></div>
-        <div class="pbar"><span class="pbar__lbl">v2 · ValueNotifier</span><span class="pbar__track"><span class="pbar__fill pbar__fill--ok" style="--w:1.9%;"></span></span><b>7</b></div>
+        <div class="pbar"><span class="pbar__lbl">v2 · state management</span><span class="pbar__track"><span class="pbar__fill pbar__fill--ok" style="--w:1.9%;"></span></span><b>7</b></div>
         <p class="pbar__note">Widgets rebuilt after <b>one</b> “add”. After 100 taps: <b>36,600</b> vs <b>700</b>. Measured in Flutter 3.47.8 with the same counter DevTools uses.</p>
       </div>
       <div class="stagger" style="grid-column: 1 / -1; display:grid; grid-template-columns: repeat(3, 1fr); gap:1.2cqw;">
@@ -771,35 +446,162 @@ ElevatedButton(
     </div>
     <footer class="foot"><span>Mobile App Development · Lecture 13</span><span class="num"></span></footer>
   </div></div>
-  <aside class="notes"><p>These numbers are real. We ran both Mini Shop versions in a Flutter test and counted every widget whose <code>build()</code> ran after one "add". v1: the 8 widgets we wrote plus everything inside them (each <code>ListTile</code> and <code>IconButton</code> is made of many small widgets), 366 in total. v2: 7.</p><p>Is setState bad? No. At 60 frames per second Flutter has about 16 ms for each frame, and a phone rebuilds a few hundred widgets quickly. The cost grows with the page: long lists, big screens and animations are where extra rebuilds hurt.</p><p>Students can see the same counts themselves: DevTools, Performance page, "Track widget build counts", then "Rebuild Stats".</p></aside>
+  <aside class="notes"><p>These numbers are real: a shop page with 5 products and a cart badge. v2 keeps the count in one shared place (Flutter's built-in <code>ValueNotifier</code>). We ran both versions in a Flutter test and counted every widget whose <code>build()</code> ran after one "add". v1: the 8 widgets we wrote plus everything inside them (each <code>ListTile</code> and <code>IconButton</code> is made of many small widgets), 366 in total. v2: 7.</p><p>Is setState bad? No. At 60 frames per second Flutter has about 16 ms for each frame, and a phone rebuilds a few hundred widgets quickly. The cost grows with the page: long lists, big screens and animations are where extra rebuilds hurt.</p><p>Students can see the same counts themselves: DevTools, Performance page, "Track widget build counts", then "Rebuild Stats".</p></aside>
 </section>
 
-<!-- 18 · Which one? -->
+<!-- 11 · Types of state management -->
 <section class="slide">
   <div class="canvas"><div class="frame">
     <header class="head">
-      <p class="kicker">Choosing</p>
-      <h2 class="title">Which one should I use?</h2>
-      <p class="lead">Start with the simplest tool that fits, and move up as the app and the team grow.</p>
+      <p class="kicker">The landscape</p>
+      <h2 class="title">Types of state management</h2>
     </header>
-    <div class="body" style="grid-template-rows: 1fr auto;">
-      <div class="journey stagger" style="grid-template-columns: repeat(4, 1fr);">
-        <div class="stop"><div class="stop__dot"><svg class="ico"><use href="#i-user"/></svg><span class="stop__n">1</span></div><h3><code>setState</code></h3><p>Local state (one widget)</p></div>
-        <div class="stop"><div class="stop__dot"><svg class="ico"><use href="#i-bell"/></svg><span class="stop__n">2</span></div><h3><code>ValueNotifier</code></h3><p>One simple shared value: it is enough</p></div>
-        <div class="stop"><div class="stop__dot" style="background:var(--grad); color:#fff; border-color:transparent;"><svg class="ico"><use href="#i-package"/></svg><span class="stop__n">3</span></div><h3>Provider <span class="badge" style="vertical-align:.2cqw;">this course</span></h3><p>Small or medium app, and learning</p></div>
-        <div class="stop"><div class="stop__dot"><svg class="ico"><use href="#i-layers"/></svg><span class="stop__n">4</span></div><h3>Riverpod or Bloc</h3><p>Bigger apps and bigger teams: popular choices</p></div>
+    <div class="body" style="grid-template-rows: auto auto; gap:1.6cqw; align-content:center;">
+      <div class="pkgs stagger">
+        <article class="card pkg pkg--pick" style="--c:#0175C2;">
+          <div class="pkg__top"><span class="pkg__logo">P</span><div><h3>Provider</h3><code>provider</code></div><span class="badge badge--ok">Our pick</span></div>
+          <div class="mini-flow"><span class="mf mf--box">CartProvider</span><span class="mf-arrow">↓ placed above the app</span><span class="mf">MaterialApp</span><span class="mf-arrow">↓ widgets watch it</span><span class="mf-row"><span class="mf mf--leaf">Badge</span><span class="mf mf--leaf">Cart page</span></span></div>
+          <p class="pkg__idea">A box of data <b>above the app</b>; widgets <b>watch</b> it.</p>
+          <div class="pkg__meta"><span class="badge badge--ok">Easy</span><span>Small and medium apps, learning. Used in the Flutter docs.</span></div>
+        </article>
+        <article class="card pkg" style="--c:#0D9488;">
+          <div class="pkg__top"><span class="pkg__logo">R</span><div><h3>Riverpod</h3><code>flutter_riverpod</code></div></div>
+          <div class="mini-flow"><span class="mf mf--box">cartProvider</span><span class="mf-arrow">↓ lives outside the tree</span><span class="mf">any widget</span><span class="mf-arrow">↓ reads it with ref</span><span class="mf-row"><span class="mf mf--leaf">Badge</span><span class="mf mf--leaf">Cart page</span></span></div>
+          <p class="pkg__idea">Like Provider, but the data lives <b>outside</b> the widget tree. Same author.</p>
+          <div class="pkg__meta"><span class="badge">Medium</span><span>Medium and large apps, lots of data from the internet.</span></div>
+        </article>
+        <article class="card pkg" style="--c:#7C3AED;">
+          <div class="pkg__top"><span class="pkg__logo">B</span><div><h3>Bloc / Cubit</h3><code>flutter_bloc</code></div></div>
+          <div class="mini-flow"><span class="mf">Add button</span><span class="mf-arrow">↓ sends an event</span><span class="mf mf--box">CartBloc</span><span class="mf-arrow">↓ gives a new state</span><span class="mf-row"><span class="mf mf--leaf">Badge</span><span class="mf mf--leaf">Cart page</span></span></div>
+          <p class="pkg__idea"><b>Events</b> go in, <b>states</b> come out. Strict and predictable.</p>
+          <div class="pkg__meta"><span class="badge badge--warm">Harder</span><span>Large apps and big teams. More code to write.</span></div>
+        </article>
+        <article class="card pkg" style="--c:#EA580C;">
+          <div class="pkg__top"><span class="pkg__logo">G</span><div><h3>GetX</h3><code>get</code></div></div>
+          <div class="mini-flow"><span class="mf mf--box">count.obs</span><span class="mf-arrow">↓ observed by</span><span class="mf">Obx widget</span><span class="mf-arrow">↓ rebuilds on change</span><span class="mf-row"><span class="mf mf--leaf">Badge</span><span class="mf mf--leaf">Cart page</span></span></div>
+          <p class="pkg__idea">Reactive variables, plus navigation and more, <b>all in one</b> package.</p>
+          <div class="pkg__meta"><span class="badge badge--ok">Easy to start</span><span>Quick prototypes. It changes many Flutter habits, so the whole team must agree.</span></div>
+        </article>
       </div>
-      <div style="display:grid; grid-template-columns: 1fr 1.25fr; gap:1.6cqw; align-items:stretch;">
-        <div class="callout callout--info" style="font-size:1.3cqw;"><svg class="ico"><use href="#i-bulb"/></svg><div>The ideas carry over: one place for the data, widgets listen, changes notify.</div></div>
-        <div class="callout callout--ok goal" style="align-self:stretch;"><svg class="ico"><use href="#i-arrow-right"/></svg><div><b>Next lecture: Provider:</b> <code>ChangeNotifier</code>, <code>ChangeNotifierProvider</code>, <code>Consumer</code>, <code>watch</code> and <code>read</code></div></div>
+      <p class="small muted" style="text-align:center;"><b>Others:</b> MobX, Redux, Signals and more on pub.dev. Different tools, <b>one idea</b>: one place for the data, widgets listen.</p>
+    </div>
+    <footer class="foot"><span>Mobile App Development · Lecture 13</span><span class="num"></span></footer>
+  </div></div>
+  <aside class="notes"><p>Be fair: all four are used in real, published apps. They differ in how much structure they force on you and how much code you write. Do not install any of them today. Point at the small pictures: each one is the "shared board" idea with a different shape.</p><p>pub.dev search: https://pub.dev/packages?q=topic%3Astate-management</p></aside>
+</section>
+
+<!-- 12 · Our pick: Provider -->
+<section class="slide">
+  <div class="canvas"><div class="frame">
+    <header class="head">
+      <p class="kicker">Our class</p>
+      <h2 class="title">Our pick for this class: <span class="grad-text">Provider</span></h2>
+    </header>
+    <div class="body" style="grid-template-columns: 1.05fr .95fr; grid-template-rows: auto auto; gap: 1.6cqw 2.4cqw; align-content:center;">
+      <div class="card" style="padding:1.5cqw .8cqw 1.2cqw;">
+        <div class="wt wt--md">
+          <ul><li><span class="nd nd--hl">ChangeNotifierProvider<small>puts CartProvider above the app</small></span>
+            <ul><li><span class="nd">MaterialApp</span>
+              <ul>
+                <li><span class="nd">ProductsPage</span><ul><li><span class="nd nd--listen">Badge<small>watches</small></span></li></ul></li>
+                <li><span class="nd">CartPage</span><ul><li><span class="nd nd--listen">Badge + text<small>watch</small></span></li></ul></li>
+              </ul>
+            </li></ul>
+          </li></ul>
+        </div>
+        <p class="ph-cap" style="margin-top:1cqw;">Every page can see the data, because it sits <b>above</b> the app</p>
+      </div>
+      <ul class="checklist stagger" style="margin-top:0; align-self:center;">
+        <li><span><b>Easy to learn:</b> only a few small pieces</span></li>
+        <li><span><b>Official:</b> the Flutter docs use it to teach app state</span></li>
+        <li><span><b>Same idea as today:</b> one place, widgets listen, only listeners rebuild</span></li>
+        <li><span><b>A great first step:</b> Riverpod and Bloc are easier to learn later</span></li>
+      </ul>
+      <div class="journey stagger" style="grid-column: 1 / -1; grid-template-columns: repeat(3, 1fr); align-items:start;">
+        <div class="stop"><div class="stop__dot"><svg class="ico"><use href="#i-user"/></svg><span class="stop__n">1</span></div><h3><code>setState</code></h3><p>local state · all course long</p></div>
+        <div class="stop"><div class="stop__dot" style="background:var(--grad); color:#fff; border-color:transparent;"><svg class="ico"><use href="#i-package"/></svg><span class="stop__n">2</span></div><h3>Provider <span class="badge" style="vertical-align:.2cqw;">our class</span></h3><p>shared state · from Lecture 14</p></div>
+        <div class="stop"><div class="stop__dot"><svg class="ico"><use href="#i-layers"/></svg><span class="stop__n">3</span></div><h3>Riverpod or Bloc</h3><p>later, for bigger apps</p></div>
       </div>
     </div>
     <footer class="foot"><span>Mobile App Development · Lecture 13</span><span class="num"></span></footer>
   </div></div>
-  <aside class="notes"><p>The concepts carry over: one place for the data, widgets listen, changes notify. A student who understands Provider can learn Riverpod or Bloc later much faster.</p><p><code>ValueNotifier</code> holds one value; for a list with rules (add, remove, total) we want a class with methods, which is exactly what Provider's <code>ChangeNotifier</code> gives us.</p></aside>
+  <aside class="notes"><p>Why Provider for this class: it is small, it is what the official Flutter docs use in "Simple app state management", and it is exactly today's picture: the data sits above the app and widgets watch it. A student who understands Provider learns Riverpod or Bloc much faster later.</p><p>Next lecture: <code>ChangeNotifier</code>, <code>ChangeNotifierProvider</code>, <code>Consumer</code>, <code>context.watch</code> and <code>context.read</code>, with the code.</p></aside>
 </section>
 
-<!-- 19 · Meme break -->
+<!-- 13 · Install Provider: one command -->
+<section class="slide">
+  <div class="canvas"><div class="frame">
+    <header class="head">
+      <p class="kicker">Install Provider · 1 of 2</p>
+      <h2 class="title">Add Provider to your project: one command</h2>
+    </header>
+    <div class="body" style="grid-template-columns: 1fr 1.1fr; gap: 2.8cqw; align-items:center;">
+      <div class="side" style="gap:1.8cqw;">
+        <ol class="steps bigsteps stagger">
+          <li><span>Open your Flutter project in <b>VS Code</b></span></li>
+          <li><span>Open the terminal: <b>View → Terminal</b></span></li>
+          <li><span>Type <code>flutter pub add provider</code> and press <b>Enter</b></span></li>
+        </ol>
+        <div class="callout callout--info" style="font-size:1.3cqw;"><svg class="ico"><use href="#i-mouse"/></svg><div><b>No terminal?</b> Press <b>Ctrl + Shift + P</b> (Cmd on Mac), choose <b>Dart: Add Dependency</b>, and type <code>provider</code>.</div></div>
+      </div>
+      <div class="side" style="gap:1.4cqw;">
+        <div class="term">
+          <div class="term__bar"><i></i><i></i><i></i><span>Terminal · my_app</span></div>
+<pre style="font-size:1.45cqw; line-height:1.65;"><span class="t-p">$</span> flutter pub add provider
+Resolving dependencies...
+Downloading packages...
+<span class="t-ok">+ nested 1.0.0</span>
+<span class="t-ok">+ provider 6.1.5+1</span>
+Changed 2 dependencies!</pre>
+        </div>
+        <div class="callout callout--ok" style="font-size:1.25cqw;"><svg class="ico"><use href="#i-check-circle"/></svg><div><b>+ provider 6.1.5+1</b> means it worked. <code>nested</code> is a small helper that Provider needs; it comes by itself.</div></div>
+      </div>
+    </div>
+    <footer class="foot"><span>Mobile App Development · Lecture 13</span><span class="num"></span></footer>
+  </div></div>
+  <aside class="notes"><p>Do it live in a fresh project. The command adds Provider to <code>pubspec.yaml</code> and downloads it in one step (it runs <code>flutter pub get</code> for us). The output above is real, from Flutter 3.47.8; the version number may be newer later in the semester.</p></aside>
+</section>
+
+<!-- 14 · Install Provider: check it worked -->
+<section class="slide">
+  <div class="canvas"><div class="frame">
+    <header class="head">
+      <p class="kicker">Install Provider · 2 of 2</p>
+      <h2 class="title">Check that it worked</h2>
+    </header>
+    <div class="body" style="grid-template-columns: 1fr 1.08fr; gap: 2.6cqw; align-items:center;">
+      <div class="side" style="gap:1.6cqw;">
+        <div class="term code">
+          <div class="term__bar"><i></i><i></i><i></i><span>pubspec.yaml</span></div>
+<pre class="hl" data-lang="yaml" data-hl="4" style="font-size:1.45cqw;">dependencies:
+  flutter:
+    sdk: flutter
+  provider: ^6.1.5+1</pre>
+        </div>
+        <ul class="checklist stagger" style="margin-top:0; gap:1.1cqw;">
+          <li><span>Open <code>pubspec.yaml</code>: <b>provider</b> is now under <code>dependencies</code></span></li>
+          <li><span>No red errors in the <b>Problems</b> tab</span></li>
+          <li><span>Next lecture we start using it in our code</span></li>
+        </ul>
+      </div>
+      <div class="side" style="gap:1.4cqw;">
+        <table class="tbl tbl--probs">
+          <thead><tr><th>If you see…</th><th>Do this</th></tr></thead>
+          <tbody>
+            <tr><td><code>Expected to find project root in current working directory.</code></td><td>Wrong folder. Open the folder that has <code>pubspec.yaml</code>, then run it again.</td></tr>
+            <tr><td>It stops at <code>Resolving dependencies...</code> or fails</td><td>Check your internet, then run the command again.</td></tr>
+            <tr><td>A red line under the <code>provider</code> import</td><td>Run <code>flutter pub get</code>. Still red? Restart VS Code.</td></tr>
+          </tbody>
+        </table>
+        <div class="callout callout--info" style="font-size:1.25cqw;"><svg class="ico"><use href="#i-globe"/></svg><div>The package page: <b>pub.dev/packages/provider</b> (version, examples and docs).</div></div>
+      </div>
+    </div>
+    <footer class="foot"><span>Mobile App Development · Lecture 13</span><span class="num"></span></footer>
+  </div></div>
+  <aside class="notes"><p>Ask every student to show you <code>provider: ^6.1.5+1</code> in their <code>pubspec.yaml</code> before they leave. The first error in the table is the most common one: the terminal is open in the wrong folder. It is the real message from <code>flutter pub add</code> outside a project.</p></aside>
+</section>
+
+<!-- 15 · Meme break -->
 <section class="slide">
   <div class="canvas"><div class="frame">
     <header class="head">
@@ -828,7 +630,7 @@ ElevatedButton(
   <aside class="notes"><p>Relieve the stress: there is no single right answer. In this course we use setState for local state and Provider for shared state (next lecture). Riverpod and Bloc are great to learn later.</p></aside>
 </section>
 
-<!-- 20 · Quick check -->
+<!-- 16 · Quick check -->
 <section class="slide">
   <div class="canvas"><div class="frame">
     <header class="head">
@@ -845,12 +647,12 @@ ElevatedButton(
         <div class="ans"><code>CounterPage</code> and every widget inside it, except <code>const</code> widgets.</div>
       </details>
       <details class="qcard">
-        <summary><span class="qn">3</span><span>The show/hide password eye: <code>setState</code> or state management?<small>Click to see the answer</small></span></summary>
-        <div class="ans"><code>setState</code>: only one widget uses it, so it is local state.</div>
+        <summary><span class="qn">3</span><span>Which command adds Provider to your project?<small>Click to see the answer</small></span></summary>
+        <div class="ans"><code>flutter pub add provider</code>, inside your project folder. Then <code>provider</code> appears in <code>pubspec.yaml</code>.</div>
       </details>
       <details class="qcard">
         <summary><span class="qn">4</span><span>The cart count shown on 3 screens?<small>Click to see the answer</small></span></summary>
-        <div class="ans">State management: one shared place, like <code>ValueNotifier</code> today and Provider next lecture.</div>
+        <div class="ans">State management: one shared place that the screens listen to. In our class we use <b>Provider</b>.</div>
       </details>
     </div>
     <footer class="foot"><span>Mobile App Development · Lecture 13</span><span class="num"></span></footer>
@@ -858,7 +660,7 @@ ElevatedButton(
   <aside class="notes"><p>Play it as a team game: read a question, give teams 20 seconds, then click the card. All four answers are on earlier slides.</p></aside>
 </section>
 
-<!-- 21 · Summary -->
+<!-- 17 · Summary -->
 <section class="slide">
   <div class="canvas"><div class="frame">
     <header class="head">
@@ -872,16 +674,16 @@ ElevatedButton(
           <li><span>State = data that changes and affects the screen; <b>UI = f(state)</b></span></li>
           <li><span>Your screen is a <b>widget tree</b> of parents and children</span></li>
           <li><span><code>setState</code> rebuilds its widget and everything inside it (71 widgets for one tap); <code>const</code> widgets are skipped</span></li>
-          <li><span>Local state → <code>setState</code>; shared state → one shared place</span></li>
-          <li><span><code>ValueNotifier</code> + <code>ValueListenableBuilder</code>: only listeners rebuild (366 → 7)</span></li>
-          <li><span>Next lecture: <b>Provider</b></span></li>
+          <li><span>Local state → <code>setState</code>; shared state → state management, where only the listeners rebuild (366 → 7)</span></li>
+          <li><span>Many tools, one idea: Provider, Riverpod, Bloc, GetX. Our class: <b>Provider</b></span></li>
+          <li><span>Install it with <code>flutter pub add provider</code></span></li>
         </ul>
         <p class="small" style="margin-top:1.1cqw;"><b>One-sentence check:</b> why did one tap rebuild 71 widgets to change one number?</p>
       </article>
       <div class="side">
         <div class="videos">
           <a class="video" href="https://docs.flutter.dev/data-and-backend/state-mgmt/ephemeral-vs-app" target="_blank" rel="noopener"><span class="itile" style="width:2.6cqw; height:2.6cqw; font-size:1.3cqw; border-radius:.5cqw;"><svg class="ico"><use href="#i-book"/></svg></span><span>Read: ephemeral state vs app state</span><small>docs.flutter.dev</small></a>
-          <a class="video" href="https://docs.flutter.dev/tools/devtools/performance" target="_blank" rel="noopener"><span class="itile" style="width:2.6cqw; height:2.6cqw; font-size:1.3cqw; border-radius:.5cqw;"><svg class="ico"><use href="#i-activity"/></svg></span><span>Try: count rebuilds in DevTools</span><small>docs.flutter.dev</small></a>
+          <a class="video" href="https://docs.flutter.dev/data-and-backend/state-mgmt/simple" target="_blank" rel="noopener"><span class="itile" style="width:2.6cqw; height:2.6cqw; font-size:1.3cqw; border-radius:.5cqw;"><svg class="ico"><use href="#i-package"/></svg></span><span>Read ahead: simple app state with Provider</span><small>docs.flutter.dev</small></a>
         </div>
         <div class="qa__big grad-text" style="font-size:4.2cqw;">Questions?</div>
       </div>
@@ -891,13 +693,13 @@ ElevatedButton(
   <aside class="notes"><p>Ask one student the one-sentence check. Answer: <code>setState</code> marks the whole <code>CounterPage</code> as dirty, so its <code>build()</code> runs again with everything inside it, even though only the number changed.</p></aside>
 </section>
 
-<!-- 22 · Homework -->
+<!-- 18 · Homework -->
 <section class="slide">
   <div class="canvas"><div class="frame">
     <header class="head">
       <p class="kicker">Practice</p>
       <h2 class="title">Homework</h2>
-      <p class="lead">Start from the Mini Shop. Exercises 1 to 4 are easy; do them first.</p>
+      <p class="lead">Think, draw, and install Provider. Next lecture we write the code with it.</p>
     </header>
     <div class="body stagger" style="grid-template-columns: repeat(3, 1fr); grid-template-rows: auto auto; align-content:start; gap:1.4cqw;">
       <article class="card" style="display:grid; gap:.7cqw; align-content:start;">
@@ -914,31 +716,31 @@ ElevatedButton(
       </article>
       <article class="card" style="display:grid; gap:.7cqw; align-content:start;">
         <div style="display:flex; align-items:center; gap:.8cqw;"><span class="n">3</span><span class="badge badge--ok">Easy</span></div>
-        <h3>Count the rebuilds</h3>
-        <p style="font-size:1.35cqw;">Add <code>debugPrint('… build')</code> to each <code>build()</code> in Mini Shop v1 and v2, then tap add once</p>
-        <p class="small" style="color:var(--faint);">Done: two console screenshots, 8 lines vs 1 line</p>
+        <h3>Install Provider</h3>
+        <p style="font-size:1.35cqw;">Create a new Flutter project and run <code>flutter pub add provider</code></p>
+        <p class="small" style="color:var(--faint);">Done: a screenshot of <code>pubspec.yaml</code> with <code>provider</code> in it</p>
       </article>
       <article class="card" style="display:grid; gap:.7cqw; align-content:start;">
         <div style="display:flex; align-items:center; gap:.8cqw;"><span class="n">4</span><span class="badge badge--ok">Easy</span></div>
-        <h3>Remove one</h3>
-        <p style="font-size:1.35cqw;">Add a “−” button on the cart page (never below 0)</p>
-        <p class="small" style="color:var(--faint);">Done: the badge and the text go down together and stop at 0</p>
+        <h3>Pick the tool</h3>
+        <p style="font-size:1.35cqw;">For 6 small features, choose <code>setState</code> or Provider</p>
+        <p class="small" style="color:var(--faint);">Done: 6 answers, each with one reason</p>
       </article>
       <article class="card" style="display:grid; gap:.7cqw; align-content:start;">
-        <div style="display:flex; align-items:center; gap:.8cqw;"><span class="n">5</span><span class="badge badge--warm">Harder</span></div>
-        <h3>A list instead of a number</h3>
-        <p style="font-size:1.35cqw;">Keep a list of product names, not just a number</p>
-        <p class="small" style="color:var(--faint);">Done: the names appear on the cart page; the badge shows the list length</p>
+        <div style="display:flex; align-items:center; gap:.8cqw;"><span class="n">5</span><span class="badge badge--warm">Read ahead</span></div>
+        <h3>Meet Provider</h3>
+        <p style="font-size:1.35cqw;">Read the Flutter docs page “Simple app state management”</p>
+        <p class="small" style="color:var(--faint);">Done: one sentence each: what is a <code>ChangeNotifier</code>, a <code>ChangeNotifierProvider</code> and a <code>Consumer</code>?</p>
       </article>
       <article class="card card--hl" style="display:grid; gap:.7cqw; align-content:start;">
-        <div style="display:flex; align-items:center; gap:.8cqw;"><span class="itile" style="width:2.4cqw; height:2.4cqw; font-size:1.25cqw; border-radius:.5cqw;"><svg class="ico"><use href="#i-bulb"/></svg></span><span class="badge">Why number 5?</span></div>
-        <h3>Feel the next pain</h3>
-        <p style="font-size:1.35cqw;">A plain <code>ValueNotifier</code> gets awkward for lists. That pain is our reason for Provider in Lecture 14.</p>
+        <div style="display:flex; align-items:center; gap:.8cqw;"><span class="itile" style="width:2.4cqw; height:2.4cqw; font-size:1.25cqw; border-radius:.5cqw;"><svg class="ico"><use href="#i-package"/></svg></span><span class="badge">Lecture 14</span></div>
+        <h3>Next: Provider</h3>
+        <p style="font-size:1.35cqw;">We build a shop cart with Provider, step by step, with the code.</p>
       </article>
     </div>
     <footer class="foot"><span>Mobile App Development · Lecture 13</span><span class="num"></span></footer>
   </div></div>
-  <aside class="notes"><p>Exercise 2 needs no code: a photo of a paper drawing is fine. Exercise 3 makes students see the 8 lines vs 1 line for themselves.</p><p>Hint for exercise 5: <code>cartItems.value.add(name)</code> does not notify listeners, because <code>.value</code> is still the same list. Create a new list instead: <code>cartItems.value = [...cartItems.value, name];</code></p></aside>
+  <aside class="notes"><p>Exercise 2 needs no code: a photo of a paper drawing is fine.</p><p>The 6 features for exercise 4: the password eye icon, the cart count, dark mode, the heart on one liked post, the logged-in user, the selected tab. (Local: eye, heart, tab. Shared: cart, dark mode, user.)</p><p>Exercise 5 link: docs.flutter.dev/data-and-backend/state-mgmt/simple</p></aside>
 </section>
 
 </main>
